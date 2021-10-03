@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+<!--    <property name="now" value="now()" dbms="h2"/>-->
+<!--    <property name="now" value="now()" dbms="mysql"/>-->
+<!--    <property name="autoIncrement" value="true"/>-->
+<!--    <property name="floatType" value="float4" dbms="postgresql, h2"/>-->
+<!--    <property name="floatType" value="float" dbms="mysql, oracle, mssql"/>-->
+    <!--
+        Added the entity orderDelivery.
+    -->
+    <!-- 这是一个创建表的语句 也可以直接写SQL语句 -->
+    <changeSet id="20210929-1" author="cyl">
+        <createTable tableName="user" remarks="用户表">
+            <column autoIncrement="true" name="id" type="int(32)" startWith="1">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_name" type="varchar(32)" remarks="用户登陆名">
+                <constraints nullable="false"/>
+            </column>
+            <column name="pass_word" type="varchar(50)" remarks="用户密码">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>
