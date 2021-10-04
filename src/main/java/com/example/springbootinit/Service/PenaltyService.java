@@ -30,9 +30,9 @@ public interface PenaltyService {
 
     /**
      * 对行政处罚记录进行"批量"发布操作
-     * @param penaltyList 行政处罚记录对象
+     * @param penaltyIds 行政处罚记录对象
      */
-//    List<Penalty> publishPenalty(List<Penalty> penaltyList);
+    List<Penalty> releasePenalty(String penaltyIds);
 
     /**
      * 通过id查询行政处罚记录

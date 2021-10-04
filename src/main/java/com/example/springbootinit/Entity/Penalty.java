@@ -46,8 +46,8 @@ public class Penalty {
 //    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private String penaltyDate;
 
-    @Column(name = "penalty_status", nullable = false, length = 1)
-    private Integer penaltyStatus;
+    @Column(name = "penalty_status", length = 1)
+    private Integer penaltyStatus = 0;
 
     public Integer getId() {
         return id;

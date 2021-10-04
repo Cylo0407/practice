@@ -6,7 +6,10 @@ import com.example.springbootinit.Service.PenaltyService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PenaltyServiceImpl implements PenaltyService {
@@ -28,12 +31,19 @@ public class PenaltyServiceImpl implements PenaltyService {
         return penaltyRepository.save(penalty);
     }
 
-//    @Override
-//    public List<Penalty> publishPenalty(List<Penalty> penaltyList) {
-//        for (Penalty penalty : penaltyList)
-//            penalty.setPenaltyStatus(1);
-//        return penaltyList;
-//    }
+    @Override
+    public List<Penalty> releasePenalty(String ids) {
+        List<Penalty> penaltyList = new ArrayList<>();
+        List idList = Arrays.asList(ids.split(","));
+        idList.forEach(ID ->{
+            Integer id = Integer.parseInt((String) ID);
+            Penalty penalty = penaltyRepository.findById(id).orElse(null);
+            penalty.setPenaltyStatus(1);
+            penaltyRepository.save(penalty);
+            penaltyList.add(penalty);
+        });
+        return penaltyList;
+    }
 
     @Override
     public Penalty findPenaltyById(int id) {

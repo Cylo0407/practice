@@ -41,6 +41,10 @@ public class PenaltyController {
     /**
      * 批量发布处罚记录
      */
+    @PutMapping("/release")
+    public List<Penalty> releasePenalty(@RequestBody String ids){
+        return penaltyService.releasePenalty(ids);
+    }
 
     /**
      * id查处罚记录
