@@ -29,9 +29,10 @@ public interface PenaltyService {
     Penalty updatePenalty(Penalty penalty);
 
     /**
-     * 对行政处罚记录进行发布操作
-     * @param penalty 行政处罚记录对象
+     * 对行政处罚记录进行"批量"发布操作
+     * @param penaltyList 行政处罚记录对象
      */
+//    List<Penalty> publishPenalty(List<Penalty> penaltyList);
 
     /**
      * 通过id查询行政处罚记录

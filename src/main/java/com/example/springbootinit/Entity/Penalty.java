@@ -13,7 +13,7 @@ public class Penalty {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Integer Id; //案例的主键
+    private Integer id; //案例的主键
 
     @Column(name = "penalty_desc", nullable = false)
     private String penaltyDesc;
@@ -36,25 +36,25 @@ public class Penalty {
     @Column(name = "punishment_basis", nullable = false)
     private String punishmentBasis;
 
-    @Column(name = "punishment_descision", nullable = false)
+    @Column(name = "punishment_decision", nullable = false)
     private String punishmentDecision;
 
     @Column(name = "punishment_organ_name", nullable = false)
     private String punishmentOrganName;
 
     @Column(name = "penalty_date", nullable = false)
-    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+//    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private String penaltyDate;
 
     @Column(name = "penalty_status", nullable = false, length = 1)
     private Integer penaltyStatus;
 
     public Integer getId() {
-        return Id;
+        return id;
     }
 
     public void setId(Integer id) {
-        Id = id;
+        this.id = id;
     }
 
     public String getPenaltyDesc() {
@@ -143,5 +143,23 @@ public class Penalty {
 
     public void setPenaltyStatus(Integer penaltyStatus) {
         this.penaltyStatus = penaltyStatus;
+    }
+
+    @Override
+    public String toString() {
+        return "Penalty{" +
+                "id=" + id +
+                ", penaltyDesc='" + penaltyDesc + '\'' +
+                ", penaltyId='" + penaltyId + '\'' +
+                ", penaltyType='" + penaltyType + '\'' +
+                ", punishedPersonName='" + punishedPersonName + '\'' +
+                ", principalName='" + principalName + '\'' +
+                ", punishmentFact='" + punishmentFact + '\'' +
+                ", punishmentBasis='" + punishmentBasis + '\'' +
+                ", punishmentDecision='" + punishmentDecision + '\'' +
+                ", punishmentOrganName='" + punishmentOrganName + '\'' +
+                ", penaltyDate='" + penaltyDate + '\'' +
+                ", penaltyStatus='" + penaltyStatus + '\'' +
+                '}';
     }
 }

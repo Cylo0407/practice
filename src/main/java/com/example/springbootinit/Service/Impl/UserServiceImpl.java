@@ -11,30 +11,30 @@ import java.util.List;
 @Service
 public class UserServiceImpl implements UserService {
     @Resource
-    private UserRepository UserRepository;
+    private UserRepository userRepository;
 
     @Override
     public User insertUser(User user) {
-        return UserRepository.save(user);
+        return userRepository.save(user);
     }
 
     @Override
     public void deleteUser(int id) {
-        UserRepository.deleteById(id);
+        userRepository.deleteById(id);
     }
 
     @Override
     public User updateUser(User user) {
-        return UserRepository.save(user);
+        return userRepository.save(user);
     }
 
     @Override
     public User findUserById(int id) {
-        return UserRepository.findById(id).orElse(null);
+        return userRepository.findById(id).orElse(null);
     }
 
     @Override
     public List<User> findAllUser() {
-        return UserRepository.findAll();
+        return userRepository.findAll();
     }
 }
