@@ -32,5 +32,5 @@ public interface UserService {
     /**
      * 查询所有用户
      */
-    List<User> findAllUser();
+    List<User> findAllUser(int pageNumber, int pageSize);
 }

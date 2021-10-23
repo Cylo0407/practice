@@ -15,39 +15,38 @@ public class Penalty {
     @Column(name = "id")
     private Integer id; //案例的主键
 
-    @Column(name = "penalty_desc", nullable = false)
-    private String penaltyDesc;
+    @Column
+    private String name; //行政处罚名称
 
-    @Column(name = "penalty_id", nullable = false)
-    private String penaltyId;
+    @Column
+    private String number; //行政处罚决定文号
 
-    @Column(name = "penalty_type", nullable = false, length = 32)
-    private String penaltyType;
+    @Column
+    private String type; //处罚类型: 只有"personal","organization"两种
 
-    @Column(name = "punished_person_name", nullable = false)
-    private String punishedPersonName;
+    @Column
+    private String partyName; //被罚当事人名称
 
-    @Column(name = "principal_name", nullable = false)
-    private String principalName;
+    @Column
+    private String responsiblePersonName; //主要负责人姓名
 
-    @Column(name = "punishment_fact", nullable = false)
-    private String punishmentFact;
+    @Column
+    private String facts; //主要违法违规事实（案由）
 
-    @Column(name = "punishment_basis", nullable = false)
-    private String punishmentBasis;
+    @Column
+    private String basis; //行政处罚依据
 
-    @Column(name = "punishment_decision", nullable = false)
-    private String punishmentDecision;
+    @Column
+    private String decision; //行政处罚决定
 
-    @Column(name = "punishment_organ_name", nullable = false)
-    private String punishmentOrganName;
+    @Column
+    private String organName; //行政处罚的机关名称
 
-    @Column(name = "penalty_date", nullable = false)
-//    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
-    private String penaltyDate;
+    @Column
+    private String date; //作出处罚决定的日期
 
-    @Column(name = "penalty_status", length = 1)
-    private Integer penaltyStatus = 0;
+    @Column
+    private String status = "0"; //状态: 只有"0":未发布,"1":已发布两种
 
     public Integer getId() {
         return id;
@@ -57,109 +56,109 @@ public class Penalty {
         this.id = id;
     }
 
-    public String getPenaltyDesc() {
-        return penaltyDesc;
+    public String getName() {
+        return name;
     }
 
-    public void setPenaltyDesc(String penaltyDesc) {
-        this.penaltyDesc = penaltyDesc;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getPenaltyId() {
-        return penaltyId;
+    public String getNumber() {
+        return number;
     }
 
-    public void setPenaltyId(String penaltyId) {
-        this.penaltyId = penaltyId;
+    public void setNumber(String number) {
+        this.number = number;
     }
 
-    public String getPenaltyType() {
-        return penaltyType;
+    public String getType() {
+        return type;
     }
 
-    public void setPenaltyType(String penaltyType) {
-        this.penaltyType = penaltyType;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public String getPunishedPersonName() {
-        return punishedPersonName;
+    public String getPartyName() {
+        return partyName;
     }
 
-    public void setPunishedPersonName(String punishedPersonName) {
-        this.punishedPersonName = punishedPersonName;
+    public void setPartyName(String partyName) {
+        this.partyName = partyName;
     }
 
-    public String getPrincipalName() {
-        return principalName;
+    public String getResponsiblePersonName() {
+        return responsiblePersonName;
     }
 
-    public void setPrincipalName(String principalName) {
-        this.principalName = principalName;
+    public void setResponsiblePersonName(String responsiblePersonName) {
+        this.responsiblePersonName = responsiblePersonName;
     }
 
-    public String getPunishmentFact() {
-        return punishmentFact;
+    public String getFacts() {
+        return facts;
     }
 
-    public void setPunishmentFact(String punishmentFact) {
-        this.punishmentFact = punishmentFact;
+    public void setFacts(String facts) {
+        this.facts = facts;
     }
 
-    public String getPunishmentBasis() {
-        return punishmentBasis;
+    public String getBasis() {
+        return basis;
     }
 
-    public void setPunishmentBasis(String punishmentBasis) {
-        this.punishmentBasis = punishmentBasis;
+    public void setBasis(String basis) {
+        this.basis = basis;
     }
 
-    public String getPunishmentDecision() {
-        return punishmentDecision;
+    public String getDecision() {
+        return decision;
     }
 
-    public void setPunishmentDecision(String punishmentDecision) {
-        this.punishmentDecision = punishmentDecision;
+    public void setDecision(String decision) {
+        this.decision = decision;
     }
 
-    public String getPunishmentOrganName() {
-        return punishmentOrganName;
+    public String getOrganName() {
+        return organName;
     }
 
-    public void setPunishmentOrganName(String punishmentOrganName) {
-        this.punishmentOrganName = punishmentOrganName;
+    public void setOrganName(String organName) {
+        this.organName = organName;
     }
 
-    public String getPenaltyDate() {
-        return penaltyDate;
+    public String getDate() {
+        return date;
     }
 
-    public void setPenaltyDate(String penaltyDate) {
-        this.penaltyDate = penaltyDate;
+    public void setDate(String date) {
+        this.date = date;
     }
 
-    public Integer getPenaltyStatus() {
-        return penaltyStatus;
+    public String getStatus() {
+        return status;
     }
 
-    public void setPenaltyStatus(Integer penaltyStatus) {
-        this.penaltyStatus = penaltyStatus;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     @Override
     public String toString() {
         return "Penalty{" +
                 "id=" + id +
-                ", penaltyDesc='" + penaltyDesc + '\'' +
-                ", penaltyId='" + penaltyId + '\'' +
-                ", penaltyType='" + penaltyType + '\'' +
-                ", punishedPersonName='" + punishedPersonName + '\'' +
-                ", principalName='" + principalName + '\'' +
-                ", punishmentFact='" + punishmentFact + '\'' +
-                ", punishmentBasis='" + punishmentBasis + '\'' +
-                ", punishmentDecision='" + punishmentDecision + '\'' +
-                ", punishmentOrganName='" + punishmentOrganName + '\'' +
-                ", penaltyDate='" + penaltyDate + '\'' +
-                ", penaltyStatus='" + penaltyStatus + '\'' +
+                ", name='" + name + '\'' +
+                ", number='" + number + '\'' +
+                ", type='" + type + '\'' +
+                ", partyName='" + partyName + '\'' +
+                ", responsiblePersonName='" + responsiblePersonName + '\'' +
+                ", facts='" + facts + '\'' +
+                ", basis='" + basis + '\'' +
+                ", decision='" + decision + '\'' +
+                ", organName='" + organName + '\'' +
+                ", date='" + date + '\'' +
+                ", status='" + status + '\'' +
                 '}';
     }
 }

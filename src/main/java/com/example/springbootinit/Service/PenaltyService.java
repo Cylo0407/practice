@@ -1,14 +1,11 @@
 package com.example.springbootinit.Service;
 
 import com.example.springbootinit.Entity.Penalty;
+import com.example.springbootinit.Utils.MyResponse;
 
 import java.util.List;
 
 public interface PenaltyService {
-    /**
-     * 对行政处罚进行导入
-     * @param penalty 行政处罚记录对象
-     */
 
     /**
      * 新增行政处罚记录
@@ -35,13 +32,13 @@ public interface PenaltyService {
     List<Penalty> releasePenalty(String penaltyIds);
 
     /**
-     * 通过id查询行政处罚记录
-     * @param id 查询id
+     * 对行政处罚记录进行"批量"撤销操作
+     * @param penaltyIds 行政处罚记录对象
      */
-    Penalty findPenaltyById(int id);
+    List<Penalty> revokePenalty(String penaltyIds);
 
     /**
      * 查询所有行政处罚记录
      */
-    List<Penalty> findAllPenalty();
+    List<Penalty> findAllPenalty(int pageNumber, int pageSize);
 }
