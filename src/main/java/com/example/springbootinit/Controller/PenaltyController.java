@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -48,15 +49,19 @@ public class PenaltyController {
      * 修改处罚记录
      */
     @PostMapping("/editPunishment")
-    public MyResponse updatePenalty(@RequestBody Penalty penalty){
+    public MyResponse updatePenalty(@RequestBody List<Penalty> penaltyList){
+        List<Penalty> penaltys = new ArrayList<>();
         Penalty newPenalty;
         try {
-            newPenalty = penaltyService.updatePenalty(penalty);
+            for (Penalty penalty:penaltyList){
+                newPenalty = penaltyService.updatePenalty(penalty);
+                penaltys.add(newPenalty);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return MyResponse.buildFailure(UPDATE_FAILED);
         }
-        return MyResponse.buildSuccess(newPenalty);
+        return MyResponse.buildSuccess(penaltys);
     }
 
     /**
