@@ -38,7 +38,7 @@ public class PenaltyServiceImpl implements PenaltyService {
         idList.forEach(ID ->{
             Integer id = Integer.parseInt((String) ID);
             Penalty penalty = penaltyRepository.findById(id).orElse(null);
-            penalty.setPenaltyStatus(1);
+            penalty.setStatus(1);
             penaltyRepository.save(penalty);
             penaltyList.add(penalty);
         });
