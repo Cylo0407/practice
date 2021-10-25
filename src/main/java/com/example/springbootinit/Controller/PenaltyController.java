@@ -25,15 +25,19 @@ public class PenaltyController {
      * 新增处罚记录
      */
     @PostMapping("/createPunishment")
-    public MyResponse addPenalty(@RequestBody Penalty penalty){
+    public MyResponse addPenalty(@RequestBody List<Penalty> penaltyList){
+        List<Penalty> penaltys = new ArrayList<>();
         Penalty newPenalty;
         try {
-            newPenalty = penaltyService.insertPenalty(penalty);
+            for (Penalty penalty:penaltyList){
+                newPenalty = penaltyService.insertPenalty(penalty);
+                penaltys.add(newPenalty);
+            }
         } catch (Exception e){
             e.printStackTrace();
             return MyResponse.buildFailure(INSERT_FAILED);
         }
-        return MyResponse.buildSuccess(newPenalty);
+        return MyResponse.buildSuccess(penaltys);
     }
 
     /**
@@ -49,19 +53,15 @@ public class PenaltyController {
      * 修改处罚记录
      */
     @PostMapping("/editPunishment")
-    public MyResponse updatePenalty(@RequestBody List<Penalty> penaltyList){
-        List<Penalty> penaltys = new ArrayList<>();
+    public MyResponse updatePenalty(@RequestBody Penalty penalty){
         Penalty newPenalty;
         try {
-            for (Penalty penalty:penaltyList){
                 newPenalty = penaltyService.updatePenalty(penalty);
-                penaltys.add(newPenalty);
-            }
         } catch (Exception e) {
             e.printStackTrace();
             return MyResponse.buildFailure(UPDATE_FAILED);
         }
-        return MyResponse.buildSuccess(penaltys);
+        return MyResponse.buildSuccess(true);
     }
 
     /**
