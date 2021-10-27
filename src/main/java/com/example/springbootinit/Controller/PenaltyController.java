@@ -68,10 +68,8 @@ public class PenaltyController {
      * 批量发布处罚记录
      */
     @PostMapping("/releasePunishment")
-//    public List<Penalty> releasePenalty(@RequestBody String ids){
-//        return penaltyService.releasePenalty(ids);
-//    }
-    public MyResponse releasePenalty(@RequestBody String ids){
+    public MyResponse releasePenalty(@RequestBody boolean bool, @RequestBody String ids){
+        //        return penaltyService.releasePenalty(ids);
         return null;
     }
 
