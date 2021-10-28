@@ -1,9 +1,9 @@
 spring:
   ##数据库连接信息
   datasource:
-    url: jdbc:mysql://localhost:3306/db1?useUnicode=true&characterEncoding=gbk
+    url: jdbc:mysql://localhost:3306/internetPractice?useUnicode=true&characterEncoding=gbk
     username: root
-    password: Cheng0407
+    password:
     driver-class-name: com.mysql.jdbc.Driver
     ###################以下为druid增加的配置###########################
     type: com.alibaba.druid.pool.DruidDataSource
@@ -33,18 +33,19 @@ spring:
     useGlobalDataSourceStat: true
     ###############以上为配置druid添加的配置########################################
 
-#  liquibase:
-#    # 开启 liquibase
-#    enabled: true
-#    # changelog是LiquiBase用来记录数据库的变更，一般放在CLASSPATH下，然后配置到执行路径中。
-#    change-log: classpath:/liquibase/master.xml
+  liquibase:
+    # 关闭 liquibase自动配置
+    enabled: false
 
   jpa:
     database: MySQL
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
 
 #mybatis:  #mybatyis的配置
 #  mapper-locations: classpath:mapper/*.xml #指定mapper的配置文件的路径是mapper文件夹下的所有 xml文件。
