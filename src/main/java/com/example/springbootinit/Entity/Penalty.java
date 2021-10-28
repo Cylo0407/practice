@@ -22,7 +22,7 @@ public class Penalty {
     private String number; //行政处罚决定文号
 
     @Column(name = "type", nullable = false)
-    private Integer type; //处罚类型(0:个人|1:企业)
+    private String type; //处罚类型('personal':个人|'organization':企业)
 
     @Column(name = "partyName", nullable = false)
     private String partyName; //被罚当事人名称
@@ -47,7 +47,7 @@ public class Penalty {
     private String date;  //行政处罚日期
 
     @Column(name = "status", nullable = false)
-    private Integer status = 0; //处罚类型(0:未发布|1:已发布)
+    private String status = "0"; //处罚类型('0':未发布|'1':已发布)
 
     public Integer getId() {
         return id;
@@ -73,11 +73,11 @@ public class Penalty {
         this.number = number;
     }
 
-    public Integer getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(Integer type) {
+    public void setType(String type) {
         this.type = type;
     }
 
@@ -137,11 +137,11 @@ public class Penalty {
         this.date = date;
     }
 
-    public Integer getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(Integer status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 
