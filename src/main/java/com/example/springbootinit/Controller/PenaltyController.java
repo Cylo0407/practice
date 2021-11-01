@@ -99,9 +99,13 @@ public class PenaltyController {
      * 批量发布处罚记录
      */
     @PostMapping("/releasePunishment")
-    public MyResponse releasePenalty(@RequestBody boolean bool, @RequestBody String ids){
-         //return penaltyService.releasePenalty(ids);
-        return null;
+    public MyResponse releasePenalty(@RequestParam boolean isRelease, @RequestBody List<String> ids){
+        List<Penalty> penalties = null;
+
+        if(isRelease) penalties = penaltyService.releasePenalty(ids);
+        else penalties = penaltyService.revokePenalty(ids);
+
+        return MyResponse.buildSuccess(penalties);
     }
 
     /**

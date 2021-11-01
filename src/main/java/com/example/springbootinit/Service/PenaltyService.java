@@ -36,13 +36,13 @@ public interface PenaltyService {
      * 对行政处罚记录进行"批量"发布操作
      * @param penaltyIds 行政处罚记录对象
      */
-    List<Penalty> releasePenalty(String penaltyIds);
+    List<Penalty> releasePenalty(List<String> penaltyIds);
 
     /**
      * 对行政处罚记录进行"批量"撤销操作
      * @param penaltyIds 行政处罚记录对象
      */
-    List<Penalty> revokePenalty(String penaltyIds);
+    List<Penalty> revokePenalty(List<String> penaltyIds);
 
     /**
      * 查询所有行政处罚记录

@@ -61,29 +61,31 @@ public class PenaltyServiceImpl implements PenaltyService {
     }
 
     @Override
-    public List<Penalty> releasePenalty(String ids) {
+    public List<Penalty> releasePenalty(List<String> ids) {
         List<Penalty> penaltyList = new ArrayList<>();
-        List idList = Arrays.asList(ids.split(","));
-        idList.forEach(ID -> {
+        ids.forEach(ID -> {
             Integer id = Integer.parseInt((String) ID);
             Penalty penalty = penaltyRepository.findById(id).orElse(null);
-            penalty.setStatus("1");
-            penaltyRepository.save(penalty);
-            penaltyList.add(penalty);
+            if(penalty != null) {
+                penalty.setStatus("1");
+                penaltyRepository.save(penalty);
+                penaltyList.add(penalty);
+            }
         });
         return penaltyList;
     }
 
     @Override
-    public List<Penalty> revokePenalty(String ids) {
+    public List<Penalty> revokePenalty(List<String> ids) {
         List<Penalty> penaltyList = new ArrayList<>();
-        List idList = Arrays.asList(ids.split(","));
-        idList.forEach(ID -> {
+        ids.forEach(ID -> {
             Integer id = Integer.parseInt((String) ID);
             Penalty penalty = penaltyRepository.findById(id).orElse(null);
-            penalty.setStatus("0");
-            penaltyRepository.save(penalty);
-            penaltyList.add(penalty);
+            if(penalty != null) {
+                penalty.setStatus("0");
+                penaltyRepository.save(penalty);
+                penaltyList.add(penalty);
+            }
         });
         return penaltyList;
     }
@@ -112,6 +114,7 @@ public class PenaltyServiceImpl implements PenaltyService {
         };
         return penaltyRepository.findAll(query, pageable).getContent();
     }
+
     /*
     @Override
     public List<Penalty> findAllPenalty(int pageNumber, int pageSize) {
