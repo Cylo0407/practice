@@ -4,9 +4,20 @@ import com.example.springbootinit.Entity.Penalty;
 import com.example.springbootinit.Repository.PenaltyRepository;
 import com.example.springbootinit.Service.PenaltyService;
 import com.example.springbootinit.Utils.MyResponse;
+import lombok.SneakyThrows;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.swing.text.html.HTMLDocument;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,17 +36,23 @@ public class PenaltyServiceImpl implements PenaltyService {
     }
 
     @Override
+    public List<Penalty> insertPenalties(List<Penalty> penalties) {
+        List<Penalty> success = new ArrayList<>();
+        Penalty newPenalty;
+        try {
+            for (Penalty penalty : penalties){
+                newPenalty = insertPenalty(penalty);
+                success.add(newPenalty);
+            }
+        } catch (Exception e){
+            return success;
+        }
+        return success;
+    }
+
+    @Override
     public void deletePenalty(int id) {
-//        List idList = Arrays.asList(ids.split(","));
-//        for (int i = 0; i < idList.size(); i++) {
-//            Integer id = Integer.parseInt((String) idList.get(i));
-//            try {
-//                penaltyRepository.deleteById(id);
-//                return MyResponse.buildSuccess();
-//            } catch (Exception e) {
-//                return MyResponse.buildFailure(DELETE_FAILED, id);
-//            }
-//        }
+        penaltyRepository.deleteById(id);
     }
 
     @Override
@@ -72,6 +89,31 @@ public class PenaltyServiceImpl implements PenaltyService {
     }
 
     @Override
+    public List<Penalty> findAllPenalty(Penalty penalty, int pageNumber, int pageSize) {
+        Sort.Direction sort = Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, sort, "id" ) ;
+        Specification<Penalty> query = new Specification<Penalty>() {
+            @SneakyThrows
+            @Override
+            public Predicate toPredicate(Root<Penalty> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+                List<Predicate> predicates = new ArrayList<>();
+                Class penaltyClass = (Class) penalty.getClass();
+                Field[] fs = penaltyClass.getDeclaredFields();
+                for(Field f : fs) {
+                    f.setAccessible(true);
+                    String key = f.getName();
+                    Object val = f.get(penalty);
+                    if(val != null)
+                        predicates.add(criteriaBuilder.equal(root.get(key), val));
+                }
+
+                return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
+            }
+        };
+        return penaltyRepository.findAll(query, pageable).getContent();
+    }
+    /*
+    @Override
     public List<Penalty> findAllPenalty(int pageNumber, int pageSize) {
         List<Penalty> penaltyList = penaltyRepository.findAll();
         int count = penaltyList.size();
@@ -86,5 +128,5 @@ public class PenaltyServiceImpl implements PenaltyService {
         } else {
             return penaltyList.subList(startCurrentPage, endCurrentPage);
         }
-    }
+    }*/
 }

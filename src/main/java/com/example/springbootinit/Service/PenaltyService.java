@@ -13,6 +13,13 @@ public interface PenaltyService {
      */
     Penalty insertPenalty(Penalty penalty);
 
+
+    /**
+     * 批量新增行政处罚记录
+     * @param penalties 行政处罚记录列表
+     */
+    List<Penalty> insertPenalties(List<Penalty> penalties);
+
     /**
      * 对导入后的结果记录可以删除
      * @param id 删除id
@@ -40,5 +47,5 @@ public interface PenaltyService {
     /**
      * 查询所有行政处罚记录
      */
-    List<Penalty> findAllPenalty(int pageNumber, int pageSize);
+    List<Penalty> findAllPenalty(Penalty penalty, int pageNumber, int pageSize);
 }

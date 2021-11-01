@@ -2,7 +2,8 @@ package com.example.springbootinit.Repository;
 
 import com.example.springbootinit.Entity.Penalty;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface PenaltyRepository extends JpaRepository<Penalty, Integer> {
+public interface PenaltyRepository extends JpaRepository<Penalty, Integer> ,JpaSpecificationExecutor<Penalty> {
 
 }

@@ -26,8 +26,7 @@ public class MyResponse {
         return response;
     }
 
-    //删除失败
-    public static MyResponse buildFailure(String msg, int id) {
+    public static MyResponse buildFailure(String msg, Object id) {
         MyResponse response = new MyResponse();
         response.setCode("-1");
         response.setMsg(msg);
