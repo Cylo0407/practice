@@ -14,11 +14,6 @@ public interface PenaltyService {
     Penalty insertPenalty(Penalty penalty);
 
 
-    /**
-     * 批量新增行政处罚记录
-     * @param penalties 行政处罚记录列表
-     */
-    List<Penalty> insertPenalties(List<Penalty> penalties);
 
     /**
      * 对导入后的结果记录可以删除
@@ -33,16 +28,16 @@ public interface PenaltyService {
     Penalty updatePenalty(Penalty penalty);
 
     /**
-     * 对行政处罚记录进行"批量"发布操作
+     * 对行政处罚记录进行"批量"发布和撤销操作
      * @param penaltyIds 行政处罚记录对象
      */
-    List<Penalty> releasePenalty(List<String> penaltyIds);
+    List<Penalty> changePenaltyStatus(String status, List<String> penaltyIds);
 
-    /**
-     * 对行政处罚记录进行"批量"撤销操作
-     * @param penaltyIds 行政处罚记录对象
-     */
-    List<Penalty> revokePenalty(List<String> penaltyIds);
+//    /**
+//     * 对行政处罚记录进行"批量"撤销操作
+//     * @param penaltyIds 行政处罚记录对象
+//     */
+//    List<Penalty> revokePenalty(List<String> penaltyIds);
 
     /**
      * 查询所有行政处罚记录

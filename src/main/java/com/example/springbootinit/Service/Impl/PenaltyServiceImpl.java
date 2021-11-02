@@ -35,20 +35,6 @@ public class PenaltyServiceImpl implements PenaltyService {
         return penaltyRepository.save(penalty);
     }
 
-    @Override
-    public List<Penalty> insertPenalties(List<Penalty> penalties) {
-        List<Penalty> success = new ArrayList<>();
-        Penalty newPenalty;
-        try {
-            for (Penalty penalty : penalties){
-                newPenalty = insertPenalty(penalty);
-                success.add(newPenalty);
-            }
-        } catch (Exception e){
-            return success;
-        }
-        return success;
-    }
 
     @Override
     public void deletePenalty(int id) {
@@ -61,13 +47,13 @@ public class PenaltyServiceImpl implements PenaltyService {
     }
 
     @Override
-    public List<Penalty> releasePenalty(List<String> ids) {
+    public List<Penalty> changePenaltyStatus(String status, List<String> ids) {
         List<Penalty> penaltyList = new ArrayList<>();
         ids.forEach(ID -> {
-            Integer id = Integer.parseInt((String) ID);
+            Integer id = Integer.parseInt(ID);
             Penalty penalty = penaltyRepository.findById(id).orElse(null);
             if(penalty != null) {
-                penalty.setStatus("1");
+                penalty.setStatus(status);
                 penaltyRepository.save(penalty);
                 penaltyList.add(penalty);
             }
@@ -75,20 +61,20 @@ public class PenaltyServiceImpl implements PenaltyService {
         return penaltyList;
     }
 
-    @Override
-    public List<Penalty> revokePenalty(List<String> ids) {
-        List<Penalty> penaltyList = new ArrayList<>();
-        ids.forEach(ID -> {
-            Integer id = Integer.parseInt((String) ID);
-            Penalty penalty = penaltyRepository.findById(id).orElse(null);
-            if(penalty != null) {
-                penalty.setStatus("0");
-                penaltyRepository.save(penalty);
-                penaltyList.add(penalty);
-            }
-        });
-        return penaltyList;
-    }
+//    @Override
+//    public List<Penalty> revokePenalty(List<String> ids) {
+//        List<Penalty> penaltyList = new ArrayList<>();
+//        ids.forEach(ID -> {
+//            Integer id = Integer.parseInt((String) ID);
+//            Penalty penalty = penaltyRepository.findById(id).orElse(null);
+//            if(penalty != null) {
+//                penalty.setStatus("0");
+//                penaltyRepository.save(penalty);
+//                penaltyList.add(penalty);
+//            }
+//        });
+//        return penaltyList;
+//    }
 
     @Override
     public List<Penalty> findAllPenalty(Penalty penalty, int pageNumber, int pageSize) {

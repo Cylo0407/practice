@@ -32,20 +32,14 @@ public class PenaltyController {
     @PostMapping("/importXls")
     public MyResponse importXls(@RequestParam(value =  "multipartfile") MultipartFile multipartFile){
         if(multipartFile.isEmpty()) return MyResponse.buildFailure(EMPTY_FILE);
-        List<Penalty> penalties = null;
+        List<Penalty> penaltyList = null;
 
         try {
-            penalties = (List<Penalty>) DataHandle.parseExcel(multipartFile.getInputStream(), Penalty.class);
+            penaltyList = (List<Penalty>) DataHandle.parseExcel(multipartFile.getInputStream(), Penalty.class);
         }catch (Exception e) {
             return MyResponse.buildFailure(PARSE_FAILED);
         }
-
-        List<Penalty> success = penaltyService.insertPenalties(penalties);
-
-        if(success.size() < penalties.size())
-            MyResponse.buildFailure(INSERT_FAILED, success);
-
-        return MyResponse.buildSuccess(success);
+        return insertPenalties(penaltyList);
     }
 
     /**
@@ -53,10 +47,21 @@ public class PenaltyController {
      */
     @PostMapping("/createPunishment")
     public MyResponse addPenalty(@RequestBody List<Penalty> penaltyList){
-        List<Penalty> success = penaltyService.insertPenalties(penaltyList);
+        return insertPenalties(penaltyList);
+    }
 
-        if(success.size() < penaltyList.size())
-            MyResponse.buildFailure(INSERT_FAILED, success);
+
+    private MyResponse insertPenalties(List<Penalty> penaltyList) {
+        List<Penalty> success = new ArrayList<>();
+        Penalty newPenalty;
+        try {
+            for (Penalty penalty : penaltyList){
+                newPenalty = penaltyService.insertPenalty(penalty);
+                success.add(newPenalty);
+            }
+        } catch (Exception e){
+            return MyResponse.buildFailure(INSERT_FAILED, success);
+        }
 
         return MyResponse.buildSuccess(success);
     }
@@ -99,11 +104,14 @@ public class PenaltyController {
      * 批量发布处罚记录
      */
     @PostMapping("/releasePunishment")
-    public MyResponse releasePenalty(@RequestParam boolean isRelease, @RequestBody List<String> ids){
+    public MyResponse changePenaltyStatus(@RequestParam String status, @RequestBody List<String> ids){
         List<Penalty> penalties = null;
 
-        if(isRelease) penalties = penaltyService.releasePenalty(ids);
-        else penalties = penaltyService.revokePenalty(ids);
+        try {
+            penaltyService.changePenaltyStatus(status, ids);
+        }catch (Exception e) {
+
+        }
 
         return MyResponse.buildSuccess(penalties);
     }
@@ -120,6 +128,6 @@ public class PenaltyController {
         if (penaltyList==null)
             return MyResponse.buildFailure(FIND_FAILED);
         else
-            return MyResponse.buildSuccess(penaltyList);
+            return MyResponse.buildSuccess(String.valueOf(penaltyList.size()), penaltyList);
     }
 }

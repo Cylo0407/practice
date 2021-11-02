@@ -3,8 +3,11 @@ package com.example.springbootinit.Entity;
 import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.util.Date;
 
 @Entity
 @Table(name = "penalty")
@@ -56,123 +59,28 @@ public class Penalty {
     @Excel(orderNum = "9", name = "行政处罚日期")
     @Column(name = "date")
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
-    private String date;  //行政处罚日期
+    private LocalDate date;  //行政处罚日期
 
     @Excel(orderNum = "10", name = "发布类型")
     @Column(name = "status", nullable = false)
     private String status = "0"; //发布类型('0':未发布|'1':已发布)
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getNumber() {
-        return number;
-    }
-
-    public void setNumber(String number) {
-        this.number = number;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getPartyName() {
-        return partyName;
-    }
-
-    public void setPartyName(String partyName) {
-        this.partyName = partyName;
-    }
-
-    public String getResponsiblePersonName() {
-        return responsiblePersonName;
-    }
-
-    public void setResponsiblePersonName(String responsiblePersonName) {
-        this.responsiblePersonName = responsiblePersonName;
-    }
-
-    public String getFacts() {
-        return facts;
-    }
-
-    public void setFacts(String facts) {
-        this.facts = facts;
-    }
-
-    public String getBasis() {
-        return basis;
-    }
-
-    public void setBasis(String basis) {
-        this.basis = basis;
-    }
-
-    public String getDecision() {
-        return decision;
-    }
-
-    public void setDecision(String decision) {
-        this.decision = decision;
-    }
-
-    public String getOrganName() {
-        return organName;
-    }
-
-    public void setOrganName(String organName) {
-        this.organName = organName;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    @Override
-    public String toString() {
-        return "Penalty{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", number='" + number + '\'' +
-                ", type=" + type +
-                ", partyName='" + partyName + '\'' +
-                ", responsiblePersonName='" + responsiblePersonName + '\'' +
-                ", facts='" + facts + '\'' +
-                ", basis='" + basis + '\'' +
-                ", decision='" + decision + '\'' +
-                ", organName='" + organName + '\'' +
-                ", date='" + date + '\'' +
-                ", status=" + status +
-                '}';
-    }
+//
+//    @Override
+//    public String toString() {
+//        return "Penalty{" +
+//                "id=" + id +
+//                ", name='" + name + '\'' +
+//                ", number='" + number + '\'' +
+//                ", type=" + type +
+//                ", partyName='" + partyName + '\'' +
+//                ", responsiblePersonName='" + responsiblePersonName + '\'' +
+//                ", facts='" + facts + '\'' +
+//                ", basis='" + basis + '\'' +
+//                ", decision='" + decision + '\'' +
+//                ", organName='" + organName + '\'' +
+//                ", date='" + date + '\'' +
+//                ", status=" + status +
+//                '}';
+//    }
 }
