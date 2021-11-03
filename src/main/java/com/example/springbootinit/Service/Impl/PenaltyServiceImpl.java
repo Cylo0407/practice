@@ -4,6 +4,7 @@ import com.example.springbootinit.Entity.Penalty;
 import com.example.springbootinit.Repository.PenaltyRepository;
 import com.example.springbootinit.Service.PenaltyService;
 import com.example.springbootinit.Utils.MyResponse;
+import liquibase.pro.packaged.D;
 import lombok.SneakyThrows;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,10 +19,11 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.swing.text.html.HTMLDocument;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.text.DecimalFormat;
+import java.util.*;
+
+import java.util.Map.Entry;
+import java.util.Collections;
 
 @Service
 public class PenaltyServiceImpl implements PenaltyService {
@@ -52,7 +54,7 @@ public class PenaltyServiceImpl implements PenaltyService {
         ids.forEach(ID -> {
             Integer id = Integer.parseInt(ID);
             Penalty penalty = penaltyRepository.findById(id).orElse(null);
-            if(penalty != null) {
+            if (penalty != null) {
                 penalty.setStatus(status);
                 penaltyRepository.save(penalty);
                 penaltyList.add(penalty);
@@ -79,7 +81,7 @@ public class PenaltyServiceImpl implements PenaltyService {
     @Override
     public List<Penalty> findAllPenalty(Penalty penalty, int pageNumber, int pageSize) {
         Sort.Direction sort = Sort.Direction.ASC;
-        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, sort, "id" ) ;
+        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, sort, "id");
         Specification<Penalty> query = new Specification<Penalty>() {
             @SneakyThrows
             @Override
@@ -87,11 +89,11 @@ public class PenaltyServiceImpl implements PenaltyService {
                 List<Predicate> predicates = new ArrayList<>();
                 Class penaltyClass = (Class) penalty.getClass();
                 Field[] fs = penaltyClass.getDeclaredFields();
-                for(Field f : fs) {
+                for (Field f : fs) {
                     f.setAccessible(true);
                     String key = f.getName();
                     Object val = f.get(penalty);
-                    if(val != null)
+                    if (val != null)
                         predicates.add(criteriaBuilder.equal(root.get(key), val));
                 }
 
@@ -118,4 +120,33 @@ public class PenaltyServiceImpl implements PenaltyService {
             return penaltyList.subList(startCurrentPage, endCurrentPage);
         }
     }*/
+
+    @Override
+    public Map<String, Double> getChart() {
+        Map<String, Integer> chartMap = new HashMap<String, Integer>();
+        List<Penalty> penaltyList = penaltyRepository.findAll();
+
+        for (Penalty penalty : penaltyList) {
+            if (chartMap.containsKey(penalty.getBasis())) {
+                int tmp = chartMap.get(penalty.getBasis());
+                chartMap.put(penalty.getBasis(), tmp + 1);
+            } else chartMap.put(penalty.getBasis(), 1);
+        }
+        Comparator<Map.Entry<String, Integer>> valCmp = new Comparator<Map.Entry<String, Integer>>() {
+            @Override
+            public int compare(Entry<String, Integer> o1, Entry<String, Integer> o2) {
+                return o2.getValue() - o1.getValue();
+            }
+        };
+        List<Map.Entry<String, Integer>> list = new ArrayList<Map.Entry<String, Integer>>(chartMap.entrySet());
+        Collections.sort(list, valCmp);
+        Map<String, Double> map = new HashMap<String, Double>();
+        DecimalFormat df = new DecimalFormat("######0.00");
+
+        for (int i = 0; i < 5; i++) {
+            map.put(list.get(i).getKey(),
+                    Double.parseDouble(df.format((list.get(i).getValue()) / (double) penaltyList.size())));
+        }
+        return map;
+    }
 }

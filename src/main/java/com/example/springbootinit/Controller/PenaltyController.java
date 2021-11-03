@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/penalty")
@@ -30,13 +31,13 @@ public class PenaltyController {
      * 导入excel
      */
     @PostMapping("/importXls")
-    public MyResponse importXls(@RequestParam(value =  "multipartfile") MultipartFile multipartFile){
-        if(multipartFile.isEmpty()) return MyResponse.buildFailure(EMPTY_FILE);
+    public MyResponse importXls(@RequestParam(value = "multipartfile") MultipartFile multipartFile) {
+        if (multipartFile.isEmpty()) return MyResponse.buildFailure(EMPTY_FILE);
         List<Penalty> penaltyList = null;
 
         try {
             penaltyList = (List<Penalty>) DataHandle.parseExcel(multipartFile.getInputStream(), Penalty.class);
-        }catch (Exception e) {
+        } catch (Exception e) {
             return MyResponse.buildFailure(PARSE_FAILED);
         }
         return insertPenalties(penaltyList);
@@ -46,7 +47,7 @@ public class PenaltyController {
      * 新增处罚记录
      */
     @PostMapping("/createPunishment")
-    public MyResponse addPenalty(@RequestBody List<Penalty> penaltyList){
+    public MyResponse addPenalty(@RequestBody List<Penalty> penaltyList) {
         return insertPenalties(penaltyList);
     }
 
@@ -55,11 +56,11 @@ public class PenaltyController {
         List<Penalty> success = new ArrayList<>();
         Penalty newPenalty;
         try {
-            for (Penalty penalty : penaltyList){
+            for (Penalty penalty : penaltyList) {
                 newPenalty = penaltyService.insertPenalty(penalty);
                 success.add(newPenalty);
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             return MyResponse.buildFailure(INSERT_FAILED, success);
         }
 
@@ -70,17 +71,17 @@ public class PenaltyController {
      * 删除处罚记录
      */
     @PostMapping("/deletePunishment")
-    public MyResponse deletePenalty(@RequestBody List<String> ids){
+    public MyResponse deletePenalty(@RequestBody List<String> ids) {
         List<String> success = new ArrayList<>();
         Penalty newPenalty;
         try {
-            for (String id:ids){
+            for (String id : ids) {
                 penaltyService.deletePenalty(Integer.parseInt(id));
                 success.add(id);
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            return MyResponse.buildFailure(DELETE_FAILED,success);
+            return MyResponse.buildFailure(DELETE_FAILED, success);
         }
         return MyResponse.buildSuccess();
     }
@@ -89,10 +90,10 @@ public class PenaltyController {
      * 修改处罚记录
      */
     @PostMapping("/editPunishment")
-    public MyResponse updatePenalty(@RequestBody Penalty penalty){
+    public MyResponse updatePenalty(@RequestBody Penalty penalty) {
         Penalty newPenalty;
         try {
-                newPenalty = penaltyService.updatePenalty(penalty);
+            newPenalty = penaltyService.updatePenalty(penalty);
         } catch (Exception e) {
             e.printStackTrace();
             return MyResponse.buildFailure(UPDATE_FAILED);
@@ -104,12 +105,12 @@ public class PenaltyController {
      * 批量发布处罚记录
      */
     @PostMapping("/releasePunishment")
-    public MyResponse changePenaltyStatus(@RequestParam String status, @RequestBody List<String> ids){
+    public MyResponse changePenaltyStatus(@RequestParam String status, @RequestBody List<String> ids) {
         List<Penalty> penalties = null;
 
         try {
             penaltyService.changePenaltyStatus(status, ids);
-        }catch (Exception e) {
+        } catch (Exception e) {
 
         }
 
@@ -121,13 +122,22 @@ public class PenaltyController {
      * 不包含输入，则默认 pageNumber = 1; pageSize = 20;
      */
     @GetMapping("/getPunishmentList/{pageNumber}/{pageSize}")
-    public MyResponse findAll(@PathVariable(value = "pageNumber", required = false) Integer pageNumber, @PathVariable(value = "pageSize", required = false) Integer pageSize, @RequestParam Penalty penalty){
+    public MyResponse findAll(@PathVariable(value = "pageNumber", required = false) Integer pageNumber, @PathVariable(value = "pageSize", required = false) Integer pageSize, @RequestParam Penalty penalty) {
         if (pageNumber == null) pageNumber = 1;
         if (pageSize == null) pageSize = 20;
-        List<Penalty> penaltyList =  penaltyService.findAllPenalty(penalty, pageNumber, pageSize);
-        if (penaltyList==null)
+        List<Penalty> penaltyList = penaltyService.findAllPenalty(penalty, pageNumber, pageSize);
+        if (penaltyList == null)
             return MyResponse.buildFailure(FIND_FAILED);
         else
             return MyResponse.buildSuccess(String.valueOf(penaltyList.size()), penaltyList);
+    }
+
+    @PostMapping("/getChart")
+    public MyResponse getChart() {
+        try {
+            return MyResponse.buildSuccess(penaltyService.getChart());
+        } catch (Exception e) {
+            return MyResponse.buildFailure(e.getMessage());
+        }
     }
 }

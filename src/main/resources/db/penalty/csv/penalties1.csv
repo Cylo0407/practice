@@ -1,5 +1,9 @@
 name,number,type,partyName,responsiblePersonName,facts,basis,decision,organName,date,status
-test1,test1,personal,test1,NULL,NULL,NULL,NULL,NULL,2021-11-02,1
-test2,test2,personal,test2,NULL,NULL,NULL,NULL,NULL,2020-10-01,1
-test3,test3,organization,test3,NULL,NULL,NULL,NULL,NULL,2021-01-01,1
-test4,test4,organization,test4,NULL,NULL,NULL,NULL,NULL,2019-01-01,0
+test1,test1,personal,test1,NULL,NULL,1,NULL,NULL,2021-11-02,1
+test2,test2,personal,test2,NULL,NULL,2,NULL,NULL,2020-10-01,1
+test3,test3,organization,test3,NULL,NULL,2,NULL,NULL,2021-01-01,1
+test4,test4,organization,test4,NULL,NULL,3,NULL,NULL,2019-01-01,0
+上海林丽五金模具有限公司,沪银罚[2015]第028488号,personal,test5,NULL,NULL,违反票据管理规定,罚款5000.00元,中国人民银行上海分行,2016-08-01,1
+上海金珊纸品包装有限公司,沪银罚[2016]第009602号,personal,test6,NULL,NULL,违反票据管理规定,罚款4253.15元,中国人民银行上海分行,2016-08-01,1
+test7,test7,organization,test7,NULL,NULL,123,NULL,NULL,2019-01-01,0
+test8,test8,organization,test8,NULL,NULL,123,NULL,NULL,2019-01-01,0
