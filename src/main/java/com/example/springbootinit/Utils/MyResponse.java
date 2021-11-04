@@ -19,26 +19,11 @@ public class MyResponse {
         return response;
     }
 
-    public static MyResponse buildSuccess(String msg, Object data) {
-        MyResponse response = new MyResponse();
-        response.setCode("1");
-        response.setMsg(msg);
-        response.setData(data);
-        return response;
-    }
 
     public static MyResponse buildFailure(String msg) {
         MyResponse response = new MyResponse();
         response.setCode("-1");
         response.setMsg(msg);
-        return response;
-    }
-
-    public static MyResponse buildFailure(String msg, Object id) {
-        MyResponse response = new MyResponse();
-        response.setCode("-1");
-        response.setMsg(msg);
-        response.setData(id);
         return response;
     }
 

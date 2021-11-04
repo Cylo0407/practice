@@ -48,7 +48,7 @@
 
             <column name="date" type="date" remarks="行政处罚日期"/>
 
-            <column name="status" type="varchar(1)"  defaultValue="0" remarks="发布类型('0':未发布|'1':已发布)"   >
+            <column name="status" type="tinyint"  defaultValue="0" remarks="发布类型(0:未发布|1:已发布)"   >
                 <constraints nullable="false" />
             </column>
 

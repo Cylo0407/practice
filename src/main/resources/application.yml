@@ -1,3 +1,4 @@
+debug: true
 spring:
   ##数据库连接信息
   datasource:

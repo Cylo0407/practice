@@ -30,8 +30,6 @@ public class DataHandle {
      */
     public static List<?> parseExcel(InputStream is, Class<?> clazz) throws Exception {
         ImportParams importParams = new ImportParams();
-        importParams.setHeadRows(1);
-        importParams.setTitleRows(0);
         return ExcelImportUtil.importExcelMore(is, clazz, importParams).getList();
     }
 
