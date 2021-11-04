@@ -1,6 +1,7 @@
 package com.example.springbootinit.Utils;
 
 public class MyResponse {
+
     private String code;
     private String msg;
     private Object data;

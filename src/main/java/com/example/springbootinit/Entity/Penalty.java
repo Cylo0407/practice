@@ -26,7 +26,7 @@ public class Penalty {
     private String number; //行政处罚决定文号
 
     @Column(name = "type", nullable = false)
-    private String type; //处罚类型('personal':个人|'organization':企业)
+    private Integer type; //处罚类型(0:个人|1:企业)
 
     @Column(name = "partyName", nullable = false)
     private String partyName; //被罚当事人名称

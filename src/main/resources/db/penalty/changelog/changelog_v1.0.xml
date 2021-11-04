@@ -28,7 +28,7 @@
                 <constraints nullable="false" />
             </column>
 
-            <column name="type" type="varchar(15)" remarks="处罚类型('personal':个人|'organization:企业)"  >
+            <column name="type" type="tinyint" remarks="处罚类型(0:个人|1:企业)"  >
                 <constraints nullable="false" />
             </column>
 

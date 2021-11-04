@@ -1,6 +1,7 @@
 package com.example.springbootinit.Service.Impl;
 
 import com.example.springbootinit.Entity.Penalty;
+import com.example.springbootinit.Exception.BussinessException;
 import com.example.springbootinit.Repository.PenaltyRepository;
 import com.example.springbootinit.Service.PenaltyService;
 import com.example.springbootinit.Utils.VPMapper.PenaltyMapper;
@@ -35,7 +36,7 @@ public class PenaltyServiceImpl implements PenaltyService {
         try {
             return PenaltyMapper.INSTANCE.p2v(penaltyRepository.save(PenaltyMapper.INSTANCE.v2p(penaltyVO)));
         } catch (DataAccessException e) {
-            throw new RuntimeException("创建文号为" + penaltyVO.getNumber() + "的记录失败");
+            throw new BussinessException("创建文号为" + penaltyVO.getNumber() + "的记录失败");
         }
     }
 
@@ -51,7 +52,7 @@ public class PenaltyServiceImpl implements PenaltyService {
         try {
             penaltyRepository.deleteById(id);
         } catch (DataAccessException e) {
-            throw new RuntimeException("删除序号为" + String.valueOf(id) + "的记录失败");
+            throw new BussinessException("删除序号为" + String.valueOf(id) + "的记录失败");
         }
     }
 
@@ -65,7 +66,7 @@ public class PenaltyServiceImpl implements PenaltyService {
         try {
             return PenaltyMapper.INSTANCE.p2v(penaltyRepository.save(PenaltyMapper.INSTANCE.v2p(penaltyVO)));
         } catch (DataAccessException e) {
-            throw new RuntimeException("更新序号为" + penaltyVO.getId() + "的记录失败");
+            throw new BussinessException("更新序号为" + penaltyVO.getId() + "的记录失败");
         }
     }
 
@@ -74,7 +75,7 @@ public class PenaltyServiceImpl implements PenaltyService {
         List<PenaltyVO> penaltyList = new ArrayList<>();
         ids.forEach(id -> {
             Penalty penalty = penaltyRepository.findById(Integer.parseInt(id))
-                    .orElseThrow(() -> new RuntimeException("不存在序号为" + id + "的记录"));
+                    .orElseThrow(() -> new BussinessException("不存在序号为" + id + "的记录"));
             penalty.setStatus(Integer.parseInt(status));
             penaltyList.add(updatePenalty(PenaltyMapper.INSTANCE.p2v(penalty)));
         });
@@ -85,35 +86,39 @@ public class PenaltyServiceImpl implements PenaltyService {
 
     @Override
     public DataListVO<PenaltyVO> findAllPenalty(PenaltyVO penaltyVO, int pageNumber, int pageSize, boolean isVague) {
-        Sort.Direction sort = Sort.Direction.ASC;
-        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, sort, "id");
-        Penalty penalty = PenaltyMapper.INSTANCE.v2p(penaltyVO);
-        Specification<Penalty> query = (root, query1, criteriaBuilder) -> {
-            List<Predicate> predicates = new ArrayList<>();
-            Class penaltyClass = (Class) penalty.getClass();
-            Field[] fs = penaltyClass.getDeclaredFields();
-            try {
-                for (Field f : fs) {
-                    f.setAccessible(true);
-                    String key = f.getName();
-                    Object val = f.get(penalty);
-                    if (val != null) {
-                        if (isVague && f.getType() == String.class)
-                            predicates.add(criteriaBuilder.like(root.get(key), "%" + val + "%"));
-                        else
-                            predicates.add(criteriaBuilder.equal(root.get(key), val));
+        try {
+            Sort.Direction sort = Sort.Direction.ASC;
+            Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, sort, "id");
+            Penalty penalty = PenaltyMapper.INSTANCE.v2p(penaltyVO);
+            Specification<Penalty> query = (root, query1, criteriaBuilder) -> {
+                List<Predicate> predicates = new ArrayList<>();
+                Class penaltyClass = (Class) penalty.getClass();
+                Field[] fs = penaltyClass.getDeclaredFields();
+                try {
+                    for (Field f : fs) {
+                        f.setAccessible(true);
+                        String key = f.getName();
+                        Object val = f.get(penalty);
+                        if (val != null) {
+                            if (isVague && f.getType() == String.class)
+                                predicates.add(criteriaBuilder.like(root.get(key), "%" + val + "%"));
+                            else
+                                predicates.add(criteriaBuilder.equal(root.get(key), val));
+                        }
                     }
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
                 }
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-            return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
-        };
-        Page<Penalty> penaltyPage = penaltyRepository.findAll(query, pageable);
-        DataListVO dataListVO = new DataListVO();
-        dataListVO.setDataList(PenaltyMapper.INSTANCE.pList2vList(penaltyPage.getContent()));
-        dataListVO.setListRelatedData(penaltyPage.getTotalElements());
-        return dataListVO;
+                return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
+            };
+            Page<Penalty> penaltyPage = penaltyRepository.findAll(query, pageable);
+            DataListVO dataListVO = new DataListVO();
+            dataListVO.setDataList(PenaltyMapper.INSTANCE.pList2vList(penaltyPage.getContent()));
+            dataListVO.setListRelatedData(penaltyPage.getTotalElements());
+            return dataListVO;
+        }catch (DataAccessException e) {
+            throw new BussinessException("查询出错");
+        }
     }
 
    /*     @Override
