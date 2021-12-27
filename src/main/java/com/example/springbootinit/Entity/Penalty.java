@@ -5,6 +5,7 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
 
 @Data
@@ -19,19 +20,19 @@ public class Penalty {
     @Column(name = "id")
     private Integer id; //案例的主键
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", length = 64, nullable = false)
     private String name; //行政处罚名称
 
-    @Column(name = "number", nullable = false)
+    @Column(name = "number", length = 64, unique = true, nullable = false)
     private String number; //行政处罚决定文号
 
     @Column(name = "type", nullable = false)
     private Integer type; //处罚类型(0:个人|1:企业)
 
-    @Column(name = "partyName", nullable = false)
+    @Column(name = "partyName", length = 64, nullable = false)
     private String partyName; //被罚当事人名称
 
-    @Column(name = "responsiblePersonName")
+    @Column(name = "responsiblePersonName", length = 64)
     private String responsiblePersonName; //主要负责人姓名
 
     @Column(name = "facts")
@@ -43,14 +44,20 @@ public class Penalty {
     @Column(name = "decision")
     private String decision; //行政处罚决定
 
-    @Column(name = "organName")
+    @Column(name = "fine")
+    private double fine;
+
+    @Column(name = "organName", length = 64)
     private String organName; //行政处罚机关名称
+
+    @Column(name = "province", length = 64)
+    private String province;
 
     @Column(name = "date")
     private LocalDate date;  //行政处罚日期
 
     @Column(name = "status", nullable = false)
-    private Integer status; //发布类型(0:未发布|1:已发布)
+    private Integer status; //发布状态(0:未发布|1:已发布)
 
     @PrePersist
     private void onCreate() {

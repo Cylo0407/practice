@@ -20,23 +20,23 @@
                 <constraints primaryKey="true" nullable="false" />
             </column>
 
-            <column name="name" type="varchar(50)" remarks="行政处罚名称"  >
+            <column name="name" type="varchar(64)" remarks="行政处罚名称"  >
                 <constraints nullable="false" />
             </column>
 
-            <column name="number" type="varchar(50)" remarks="行政处罚决定文号"  >
-                <constraints nullable="false" />
+            <column name="number" type="varchar(64)" remarks="行政处罚决定文号"  >
+                <constraints nullable="false" unique="true"/>
             </column>
 
             <column name="type" type="tinyint" remarks="处罚类型(0:个人|1:企业)"  >
                 <constraints nullable="false" />
             </column>
 
-            <column name="partyName" type="varchar(20)" remarks="被罚当事人名称"   >
+            <column name="partyName" type="varchar(64)" remarks="被罚当事人名称"   >
                 <constraints nullable="false" />
             </column>
 
-            <column name="responsiblePersonName" type="varchar(20)" remarks="主要负责人姓名" />
+            <column name="responsiblePersonName" type="varchar(64)" remarks="主要负责人姓名" />
 
             <column name="facts" type="varchar(255)" remarks="主要违法违规事实" />
 
@@ -44,11 +44,11 @@
 
             <column name="decision" type="varchar(255)" remarks="行政处罚决定"/>
 
-            <column name="organName" type="varchar(20)" remarks="行政处罚机关名称"/>
+            <column name="organName" type="varchar(64)" remarks="行政处罚机关名称"/>
 
             <column name="date" type="date" remarks="行政处罚日期"/>
 
-            <column name="status" type="tinyint"  defaultValue="0" remarks="发布类型(0:未发布|1:已发布)"   >
+            <column name="status" type="tinyint"  defaultValue="0" remarks="发布状态(0:未发布|1:已发布)"   >
                 <constraints nullable="false" />
             </column>
 

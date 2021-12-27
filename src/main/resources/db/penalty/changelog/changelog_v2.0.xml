@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <changeSet id="20211226_1_alterPenalty" author="csy">
+        <preConditions onFail="MARK_RAN">
+                <tableExists tableName="penalty"/>
+        </preConditions>
+
+        <comment>更改penalty表</comment>
+        <addColumn
+                schemaName="internetPractice"
+                tableName="penalty">
+            <column afterColumn="decision" name="fine" type="double" remarks="罚金" />
+
+            <column afterColumn="organName" name="province" type="varchar(64)" remarks="省份" />
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

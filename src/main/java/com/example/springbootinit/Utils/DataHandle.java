@@ -2,7 +2,7 @@ package com.example.springbootinit.Utils;
 
 import cn.afterturn.easypoi.excel.ExcelImportUtil;
 import cn.afterturn.easypoi.excel.entity.ImportParams;
-import com.example.springbootinit.Exception.ValidException;
+import com.example.springbootinit.Exception.BussinessException;
 
 import java.io.File;
 import java.io.InputStream;
@@ -21,12 +21,12 @@ public class DataHandle {
      * @return
      * @throws Exception
      */
-    public static List<?> parseExcel(InputStream is, Class<?> clazz) throws ValidException {
+    public static List<?> parseExcel(InputStream is, Class<?> clazz) throws BussinessException {
         try {
             ImportParams importParams = new ImportParams();
             return ExcelImportUtil.importExcelMore(is, clazz, importParams).getList();
         }catch (Exception e) {
-            throw new ValidException(PARSE_FAILED);
+            throw new BussinessException(PARSE_FAILED);
         }
     }
 
