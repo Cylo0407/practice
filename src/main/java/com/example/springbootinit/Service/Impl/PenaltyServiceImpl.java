@@ -7,6 +7,8 @@ import com.example.springbootinit.Service.PenaltyService;
 import com.example.springbootinit.Utils.VPMapper.PenaltyMapper;
 import com.example.springbootinit.VO.DataListVO;
 import com.example.springbootinit.VO.PenaltyVO;
+import com.example.springbootinit.VO.SummaryVO;
+import liquibase.pro.packaged.S;
 import lombok.SneakyThrows;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
@@ -20,8 +22,9 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import javax.persistence.criteria.Predicate;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -116,7 +119,7 @@ public class PenaltyServiceImpl implements PenaltyService {
             dataListVO.setDataList(PenaltyMapper.INSTANCE.pList2vList(penaltyPage.getContent()));
             dataListVO.setListRelatedData(penaltyPage.getTotalElements());
             return dataListVO;
-        }catch (DataAccessException e) {
+        } catch (DataAccessException e) {
             throw new BussinessException("查询出错");
         }
     }
@@ -153,4 +156,93 @@ public class PenaltyServiceImpl implements PenaltyService {
             return penaltyList.subList(startCurrentPage, endCurrentPage);
         }
     }*/
+
+    @Override
+    public SummaryVO getSummary(String year, String month) {
+        SummaryVO summaryVO = new SummaryVO();
+        //现在的年月
+        List<Penalty> presentList = getToalOfSummary(year, month);
+        summaryVO.setTotal("" + presentList.size()); //罚单合计
+        double amountOfSummary = getAmountOfSummary(presentList);
+        summaryVO.setAmount("" + amountOfSummary); //累计罚没金额
+
+        int countOrganization = 0, countPersonal = 0;
+        Map<String, Integer> map = getMapOfSummary(presentList);
+        for (Map.Entry<String, Integer> entry : map.entrySet()) {
+            if (entry.getValue() == 0) countPersonal++;
+            else countOrganization++;
+        }
+        summaryVO.setCountOrganization("" + countOrganization); //处罚机构数量
+        summaryVO.setCountPersonal("" + countPersonal); //处罚人员数量
+
+        //去年同月
+        String pastyear = String.valueOf(Integer.parseInt(year) - 1);
+        List<Penalty> lastList = getToalOfSummary(pastyear, month);
+        summaryVO.setLastTotal("" + lastList.size()); //去年罚单合计
+        summaryVO.setLastAmount("" + getAmountOfSummary(lastList)); //去年累计罚没金额
+
+        int lastCountOrganization = 0, lastCountPersonal = 0;
+        Map<String, Integer> pastMap = getMapOfSummary(lastList);
+        for (Map.Entry<String, Integer> entry : pastMap.entrySet()) {
+            if (entry.getValue() == 0) lastCountPersonal++;
+            else lastCountOrganization++;
+        }
+        summaryVO.setLastCountOrganization("" + lastCountOrganization); //去年处罚机构数量
+        summaryVO.setLastCountPersonal("" + lastCountPersonal); //去年处罚人员数量
+
+        //分行相关
+        List<Penalty> branchList = getBranchToalOfSummary(presentList, 0);
+        summaryVO.setBranchTotal("" + branchList.size()); //分行罚单合计
+        summaryVO.setBranchTotalRatio(String.format("%.2f", (double) branchList.size() / presentList.size())); //分行罚单百分比
+        summaryVO.setBranchAmount("" + getAmountOfSummary(branchList)); //分行累计罚没金额
+        summaryVO.setBranchAmountRatio(String.format("%.2f", getAmountOfSummary(branchList) / amountOfSummary)); //分行罚没金额百分比
+
+        //中心支行相关
+        List<Penalty> centerBranchList = getBranchToalOfSummary(presentList, 1);
+        summaryVO.setCenterBranchTotal("" + centerBranchList.size()); //中心支行罚单合计
+        summaryVO.setCenterBranchTotalRatio(String.format("%.2f", (double) centerBranchList.size() / presentList.size())); //中心支行罚单百分比
+        summaryVO.setCenterBranchAmount("" + getAmountOfSummary(centerBranchList)); //中心支行累计罚没金额
+        summaryVO.setCenterBranchAmountRatio(String.format("%.2f", getAmountOfSummary(centerBranchList) / amountOfSummary)); //中心支行罚没金额百分比
+
+        return summaryVO;
+    }
+
+    public List<Penalty> getToalOfSummary(String year, String month) {
+        List<Penalty> penaltyList = penaltyRepository.findAll();
+        List<Penalty> resList = new ArrayList<>();
+
+        for (Penalty penalty : penaltyList)
+            if (penalty.getDate().toString().substring(0, 7).equals(year + "-" + month))
+                resList.add(penalty);
+        return resList;
+    }
+
+    public double getAmountOfSummary(List<Penalty> penaltyList) {
+        double amount = 0.0;
+        for (Penalty penalty : penaltyList)
+            amount += penalty.getFine();
+        return amount;
+    }
+
+    public Map<String, Integer> getMapOfSummary(List<Penalty> penaltyList) {
+        Map<String, Integer> map = new HashMap<>();
+        for (Penalty penalty : penaltyList) {
+            if (!map.containsKey(penalty.getName())) map.put(penalty.getName(), penalty.getType());
+        }
+        return map;
+    }
+
+    public List<Penalty> getBranchToalOfSummary(List<Penalty> penaltyList, int flag) { //flag 为0是分行；为1是中心支行
+        List<Penalty> branchList = new ArrayList<>();
+        List<Penalty> centerBranchList = new ArrayList<>();
+
+        for (Penalty penalty : penaltyList) {
+            String organizationName = penalty.getOrganName();
+            if (organizationName.endsWith("分行")) branchList.add(penalty);
+            else if (organizationName.endsWith("中心支行")) centerBranchList.add(penalty);
+        }
+
+        if (flag == 0) return branchList;
+        else return centerBranchList;
+    }
 }

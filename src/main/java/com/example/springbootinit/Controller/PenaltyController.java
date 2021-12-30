@@ -5,6 +5,7 @@ import com.example.springbootinit.Utils.DataHandle;
 import com.example.springbootinit.Utils.MyResponse;
 import com.example.springbootinit.VO.DataListVO;
 import com.example.springbootinit.VO.PenaltyVO;
+import com.example.springbootinit.VO.SummaryVO;
 import liquibase.pro.packaged.S;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -89,10 +90,10 @@ public class PenaltyController {
      */
     @GetMapping("/getSummary")
     public MyResponse getSummary(@RequestParam(value = "year") String year,
-                                  @RequestParam(value = "month") String month) {
+                                 @RequestParam(value = "month") String month) {
         //TODO
-
-        return null;
+        SummaryVO summaryVO = penaltyService.getSummary(year, month);
+        return MyResponse.buildSuccess(summaryVO);
     }
 
     /**
@@ -100,7 +101,7 @@ public class PenaltyController {
      */
     @GetMapping("/getOrganListOrderByCount")
     public MyResponse getOrganListOrderByCount(@RequestParam(value = "year") String year,
-                                                 @RequestParam(value = "month") String month) {
+                                               @RequestParam(value = "month") String month) {
         //TODO
 
         return null;
@@ -122,7 +123,7 @@ public class PenaltyController {
      */
     @GetMapping("/getPenaltyDistribution")
     public MyResponse getPenaltyDistribution(@RequestParam(value = "year") String year,
-                                              @RequestParam(value = "month") String month) {
+                                             @RequestParam(value = "month") String month) {
         //TODO
 
         return null;
