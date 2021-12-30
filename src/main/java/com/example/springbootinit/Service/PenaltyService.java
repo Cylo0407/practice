@@ -65,6 +65,7 @@ public interface PenaltyService {
      */
     DataListVO findAllPenalty(PenaltyVO penaltyVO, int pageNumber, int pageSize, boolean isVague);
 
+
     /**
      * 获取该年月的总体处罚情况入口
      */
