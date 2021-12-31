@@ -100,9 +100,8 @@ public class PenaltyController {
     @GetMapping("/getOrganListOrderByCount")
     public MyResponse getOrganListOrderByCount(@RequestParam(value = "year") String year,
                                                @RequestParam(value = "month") String month) {
-        //TODO
 
-        return null;
+        return MyResponse.buildSuccess(penaltyService.getOrganListOrderByCount(year, month));
     }
 
     /**
@@ -111,9 +110,8 @@ public class PenaltyController {
     @GetMapping("/getOrganListOrderByFine")
     public MyResponse getOrganListOrderByFine(@RequestParam(value = "year") String year,
                                               @RequestParam(value = "month") String month) {
-        //TODO
 
-        return null;
+        return MyResponse.buildSuccess(penaltyService.getOrganListOrderByFine(year, month));
     }
 
     /**

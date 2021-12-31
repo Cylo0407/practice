@@ -7,12 +7,9 @@ import com.example.springbootinit.Service.PenaltyService;
 import com.example.springbootinit.Utils.DataHandle;
 import com.example.springbootinit.Utils.MyResponse;
 import com.example.springbootinit.Utils.VPMapper.PenaltyMapper;
-import com.example.springbootinit.VO.DataListVO;
-import com.example.springbootinit.VO.PenaltyVO;
-import com.example.springbootinit.VO.SummaryVO;
+import com.example.springbootinit.VO.*;
 import liquibase.pro.packaged.D;
 import liquibase.pro.packaged.S;
-import com.example.springbootinit.VO.PunishmentDecisionVO;
 import org.apache.tomcat.jni.Local;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
@@ -248,4 +245,23 @@ public class PenaltyServiceImpl implements PenaltyService {
         else return centerBranchList;
     }
 
+    @Override
+    public List<OrganDetailVO> getOrganListOrderByCount(String year, String month){
+        try {
+            List<OrganDetailVO> organDetailVOList = penaltyRepository.findAllByCountAndDate(year, month);
+            return organDetailVOList;
+        }catch (DataAccessException e) {
+            throw new BussinessException("查询出错");
+        }
+    }
+
+    @Override
+    public List<OrganDetailVO> getOrganListOrderByFine(String year, String month){
+        try {
+            List<OrganDetailVO> organDetailVOList = penaltyRepository.findAllByFineAndDate(year, month);
+            return organDetailVOList;
+        }catch (DataAccessException e) {
+            throw new BussinessException("查询出错");
+        }
+    }
 }
