@@ -190,7 +190,7 @@ public class PenaltyServiceImpl implements PenaltyService {
         String pastyear = String.valueOf(Integer.parseInt(year) - 1);
         List<Penalty> lastList = penaltyRepository.findAllByDate(pastyear, month);
         summaryVO.setLastTotal("" + lastList.size()); //去年罚单合计
-        summaryVO.setLastAmount("" + getAmountOfSummary(lastList)); //去年累计罚没金额
+        summaryVO.setLastAmount("" + lastList.stream().mapToDouble(Penalty::getFine).sum()); //去年累计罚没金额
 
         int lastCountOrganization = 0, lastCountPersonal = 0;
         Map<String, Integer> pastMap = getMapOfSummary(lastList);
@@ -205,26 +205,26 @@ public class PenaltyServiceImpl implements PenaltyService {
         List<Penalty> branchList = getBranchToalOfSummary(presentList, 0);
         summaryVO.setBranchTotal("" + branchList.size()); //分行罚单合计
         summaryVO.setBranchTotalRatio(String.format("%.2f", (double) branchList.size() / presentList.size())); //分行罚单百分比
-        summaryVO.setBranchAmount("" + getAmountOfSummary(branchList)); //分行累计罚没金额
-        summaryVO.setBranchAmountRatio(String.format("%.2f", getAmountOfSummary(branchList) / amountOfSummary)); //分行罚没金额百分比
+        summaryVO.setBranchAmount("" + branchList.stream().mapToDouble(Penalty::getFine).sum()); //分行累计罚没金额
+        summaryVO.setBranchAmountRatio(String.format("%.2f", branchList.stream().mapToDouble(Penalty::getFine).sum() / amountOfSummary)); //分行罚没金额百分比
 
         //中心支行相关
         List<Penalty> centerBranchList = getBranchToalOfSummary(presentList, 1);
         summaryVO.setCenterBranchTotal("" + centerBranchList.size()); //中心支行罚单合计
         summaryVO.setCenterBranchTotalRatio(String.format("%.2f", (double) centerBranchList.size() / presentList.size())); //中心支行罚单百分比
-        summaryVO.setCenterBranchAmount("" + getAmountOfSummary(centerBranchList)); //中心支行累计罚没金额
-        summaryVO.setCenterBranchAmountRatio(String.format("%.2f", getAmountOfSummary(centerBranchList) / amountOfSummary)); //中心支行罚没金额百分比
+        summaryVO.setCenterBranchAmount("" + centerBranchList.stream().mapToDouble(Penalty::getFine).sum()); //中心支行累计罚没金额
+        summaryVO.setCenterBranchAmountRatio(String.format("%.2f", centerBranchList.stream().mapToDouble(Penalty::getFine).sum() / amountOfSummary)); //中心支行罚没金额百分比
 
         return summaryVO;
     }
 
-    private Double getAmountOfSummary(List<Penalty> penaltyList) {
-        double amount = 0.0;
-        for(Penalty penalty : penaltyList)
-            amount += penalty.getFine();
-
-        return amount;
-    }
+//    private Double getAmountOfSummary(List<Penalty> penaltyList) {
+//        double amount = 0.0;
+//        for(Penalty penalty : penaltyList)
+//            amount += penalty.getFine();
+//
+//        return amount;
+//    }
 
     public Map<String, Integer> getMapOfSummary(List<Penalty> penaltyList) {
         Map<String, Integer> map = new HashMap<>();
@@ -247,4 +247,5 @@ public class PenaltyServiceImpl implements PenaltyService {
         if (flag == 0) return branchList;
         else return centerBranchList;
     }
+
 }
