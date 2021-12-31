@@ -5,6 +5,7 @@ import com.example.springbootinit.VO.PunishmentDecisionVO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -26,7 +27,30 @@ public interface PenaltyRepository extends JpaRepository<Penalty, Integer> ,JpaS
             nativeQuery = true)
     List<Object[]> getAnalysis(Integer type, String year, String month);*/
 
-    List<Penalty> findAllByDateBetween(LocalDate startDate, LocalDate endDate);
+    @Query(value =
+            "Select * " +
+            "From Penalty " +
+            "Where type = :type and year(date) = :year and month(date) = :month "
+            , nativeQuery = true)
+    List<Penalty> findAllByDate(@Param("year") String year,
+                                @Param("month") String month);
 
-    List<Penalty> findAllByTypeAndDateBetween(Integer type, LocalDate startDate, LocalDate endDate);
+    @Query(value =
+            "Select * " +
+            "From Penalty " +
+            "Where type = :type and year(date) = :year and month(date) = :month "
+            , nativeQuery = true)
+    List<Penalty> findAllByTypeAndDate(@Param("type") Integer type,
+                                       @Param("year") String year,
+                                       @Param("month") String month);
+
+    @Query(value =
+            "Select * " +
+            "From Penalty " +
+            "Where year(date) = :year and month(date) = :month " +
+            "Order by fine Desc " +
+            "Limit 10 "
+            , nativeQuery = true)
+    List<Penalty> findAllOrderByFine(@Param("year") String year,
+                                     @Param("month") String month);
 }

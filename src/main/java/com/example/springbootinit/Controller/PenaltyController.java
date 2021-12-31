@@ -90,9 +90,8 @@ public class PenaltyController {
     @GetMapping("/getSummary")
     public MyResponse getSummary(@RequestParam(value = "year") String year,
                                  @RequestParam(value = "month") String month) {
-        //TODO
-        SummaryVO summaryVO = penaltyService.getSummary(year, month);
-        return MyResponse.buildSuccess(summaryVO);
+
+        return MyResponse.buildSuccess(penaltyService.getSummary(year, month));
     }
 
     /**
@@ -100,7 +99,7 @@ public class PenaltyController {
      */
     @GetMapping("/getOrganListOrderByCount")
     public MyResponse getOrganListOrderByCount(@RequestParam(value = "year") String year,
-                                                 @RequestParam(value = "month") String month) {
+                                               @RequestParam(value = "month") String month) {
         //TODO
 
         return null;
@@ -122,7 +121,7 @@ public class PenaltyController {
      */
     @GetMapping("/getPenaltyDistribution")
     public MyResponse getPenaltyDistribution(@RequestParam(value = "year") String year,
-                                              @RequestParam(value = "month") String month) {
+                                             @RequestParam(value = "month") String month) {
         //TODO
 
         return null;
@@ -134,9 +133,8 @@ public class PenaltyController {
     @GetMapping("/getPenaltyOrderByFine")
     public MyResponse getPenaltyOrderByFine(@RequestParam(value = "year") String year,
                                             @RequestParam(value = "month") String month) {
-        //TODO
 
-        return null;
+        return MyResponse.buildSuccess(penaltyService.getPenaltyOrderByFine(year, month));
     }
 
     /**
