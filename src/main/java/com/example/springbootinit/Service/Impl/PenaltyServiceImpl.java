@@ -4,12 +4,14 @@ import com.example.springbootinit.Entity.Penalty;
 import com.example.springbootinit.Exception.BussinessException;
 import com.example.springbootinit.Repository.PenaltyRepository;
 import com.example.springbootinit.Service.PenaltyService;
+import com.example.springbootinit.Utils.DataHandle;
 import com.example.springbootinit.Utils.VPMapper.PenaltyMapper;
 import com.example.springbootinit.VO.DataListVO;
 import com.example.springbootinit.VO.PenaltyVO;
 import com.example.springbootinit.VO.SummaryVO;
 import liquibase.pro.packaged.S;
-import lombok.SneakyThrows;
+import com.example.springbootinit.VO.PunishmentDecisionVO;
+import org.apache.tomcat.jni.Local;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import javax.persistence.criteria.Predicate;
 import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -44,8 +48,8 @@ public class PenaltyServiceImpl implements PenaltyService {
     }
 
     @Override
-    public DataListVO insertPenalties(List<PenaltyVO> penaltyList) {
-        DataListVO<PenaltyVO> resDataList = new DataListVO();
+    public DataListVO<PenaltyVO> insertPenalties(List<PenaltyVO> penaltyList) {
+        DataListVO<PenaltyVO> resDataList = new DataListVO<>();
         resDataList.setDataList(penaltyList.stream().map(this::insertPenalty).collect(Collectors.toList()));
         return resDataList;
     }
@@ -55,7 +59,7 @@ public class PenaltyServiceImpl implements PenaltyService {
         try {
             penaltyRepository.deleteById(id);
         } catch (DataAccessException e) {
-            throw new BussinessException("删除序号为" + String.valueOf(id) + "的记录失败");
+            throw new BussinessException("删除序号为" + id + "的记录失败");
         }
     }
 
@@ -82,7 +86,7 @@ public class PenaltyServiceImpl implements PenaltyService {
             penalty.setStatus(Integer.parseInt(status));
             penaltyList.add(updatePenalty(PenaltyMapper.INSTANCE.p2v(penalty)));
         });
-        DataListVO dataList = new DataListVO();
+        DataListVO<PenaltyVO> dataList = new DataListVO<>();
         dataList.setDataList(penaltyList);
         return dataList;
     }
@@ -115,11 +119,34 @@ public class PenaltyServiceImpl implements PenaltyService {
                 return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
             };
             Page<Penalty> penaltyPage = penaltyRepository.findAll(query, pageable);
-            DataListVO dataListVO = new DataListVO();
+            DataListVO<PenaltyVO> dataListVO = new DataListVO<>();
             dataListVO.setDataList(PenaltyMapper.INSTANCE.pList2vList(penaltyPage.getContent()));
             dataListVO.setListRelatedData(penaltyPage.getTotalElements());
             return dataListVO;
         } catch (DataAccessException e) {
+            throw new BussinessException("查询出错");
+        }
+    }
+
+    @Override
+    public DataListVO<PunishmentDecisionVO> getAnalysis(String type, String year, String month) {
+        try {
+            List<Penalty> penaltyMatch = getPenaltyByTypeAndDate(type, year, month);
+            int countAll = penaltyMatch.size();
+            Map<String, List<Penalty>> penaltyGroupByPunishmentType = penaltyMatch.stream().collect(Collectors.groupingBy(Penalty::getPunishmentType));
+            List<PunishmentDecisionVO> result = new ArrayList<>();
+            penaltyGroupByPunishmentType.forEach((key, value) -> {
+                PunishmentDecisionVO p = new PunishmentDecisionVO();
+                p.setType(key);
+                p.setFrequency(String.valueOf(value.size()));
+                p.setRatio(String.format("%.2f", value.size() / (double)countAll));
+                p.setAmount(String.format("%.2f", value.stream().mapToDouble(Penalty::getFine).sum()));
+                result.add(p);
+            });
+            DataListVO<PunishmentDecisionVO> dataListVO = new DataListVO<>();
+            dataListVO.setDataList(result);
+            return dataListVO;
+        }catch (DataAccessException e) {
             throw new BussinessException("查询出错");
         }
     }
@@ -139,31 +166,13 @@ public class PenaltyServiceImpl implements PenaltyService {
         return penaltyList;
     }*/
 
-    /*
-    @Override
-    public List<Penalty> findAllPenalty(int pageNumber, int pageSize) {
-        List<Penalty> penaltyList = penaltyRepository.findAll();
-        int count = penaltyList.size();
-
-        int startCurrentPage = (pageNumber - 1) * pageSize; //开启的数据
-        int endCurrentPage = pageNumber * pageSize; //结束的数据
-
-        // pageNumber小于0 或 大于总页数 报错
-        int totalPage = count / pageSize;                   //总页数
-        if (pageNumber > totalPage || pageNumber <= 0) {
-            return null;
-        } else {
-            return penaltyList.subList(startCurrentPage, endCurrentPage);
-        }
-    }*/
-
     @Override
     public SummaryVO getSummary(String year, String month) {
         SummaryVO summaryVO = new SummaryVO();
         //现在的年月
-        List<Penalty> presentList = getToalOfSummary(year, month);
+        List<Penalty> presentList = getPenaltyByDate(year, month);
         summaryVO.setTotal("" + presentList.size()); //罚单合计
-        double amountOfSummary = getAmountOfSummary(presentList);
+        double amountOfSummary = presentList.stream().mapToDouble(Penalty::getFine).sum();
         summaryVO.setAmount("" + amountOfSummary); //累计罚没金额
 
         int countOrganization = 0, countPersonal = 0;
@@ -177,7 +186,7 @@ public class PenaltyServiceImpl implements PenaltyService {
 
         //去年同月
         String pastyear = String.valueOf(Integer.parseInt(year) - 1);
-        List<Penalty> lastList = getToalOfSummary(pastyear, month);
+        List<Penalty> lastList = getPenaltyByDate(pastyear, month);
         summaryVO.setLastTotal("" + lastList.size()); //去年罚单合计
         summaryVO.setLastAmount("" + getAmountOfSummary(lastList)); //去年累计罚没金额
 
@@ -207,14 +216,16 @@ public class PenaltyServiceImpl implements PenaltyService {
         return summaryVO;
     }
 
-    public List<Penalty> getToalOfSummary(String year, String month) {
-        List<Penalty> penaltyList = penaltyRepository.findAll();
-        List<Penalty> resList = new ArrayList<>();
+    private List<Penalty> getPenaltyByDate(String year, String month) {
+        LocalDate startDate = DataHandle.string2Date(year + "-" + month + "-" + "01");
+        LocalDate endDate = startDate.plusMonths(1).minusDays(1);
+        return penaltyRepository.findAllByDateBetween(startDate, endDate);
+    }
 
-        for (Penalty penalty : penaltyList)
-            if (penalty.getDate().toString().substring(0, 7).equals(year + "-" + month))
-                resList.add(penalty);
-        return resList;
+    private List<Penalty> getPenaltyByTypeAndDate(String type, String year, String month) {
+        LocalDate startDate = DataHandle.string2Date(year + "-" + month + "-" + "01");
+        LocalDate endDate = startDate.plusMonths(1).minusDays(1);
+        return penaltyRepository.findAllByTypeAndDateBetween(Integer.valueOf(type), startDate, endDate);
     }
 
     public double getAmountOfSummary(List<Penalty> penaltyList) {

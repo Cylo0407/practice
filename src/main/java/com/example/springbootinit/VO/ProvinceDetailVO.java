@@ -1,5 +1,9 @@
 package com.example.springbootinit.VO;
 
+
+import lombok.Data;
+
+@Data
 public class ProvinceDetailVO {
 
     private String province; //省份名称

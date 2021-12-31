@@ -1,5 +1,7 @@
 package com.example.springbootinit.VO;
+import lombok.Data;
 
+@Data
 public class OrganDetailVO {
 
     private String name; //机构名称

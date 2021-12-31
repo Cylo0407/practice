@@ -55,16 +55,4 @@
         </createTable>
 
     </changeSet>
-
-    <changeSet id="20211102_1_insertPenalties" author="csy">
-        <comment>往penalty表插入penaltis1.csv中的数据</comment>
-        <loadData
-                encoding="UTF-8"
-                file="db/penalty/csv/penalties1.csv"
-                schemaName="internetPractice"
-                separator=","
-                tableName="penalty">
-                <column name="id" header="id" type="skip" />
-        </loadData>
-    </changeSet>
 </databaseChangeLog>

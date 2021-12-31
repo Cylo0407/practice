@@ -6,7 +6,6 @@ import com.example.springbootinit.Utils.MyResponse;
 import com.example.springbootinit.VO.DataListVO;
 import com.example.springbootinit.VO.PenaltyVO;
 import com.example.springbootinit.VO.SummaryVO;
-import liquibase.pro.packaged.S;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -101,7 +100,7 @@ public class PenaltyController {
      */
     @GetMapping("/getOrganListOrderByCount")
     public MyResponse getOrganListOrderByCount(@RequestParam(value = "year") String year,
-                                               @RequestParam(value = "month") String month) {
+                                                 @RequestParam(value = "month") String month) {
         //TODO
 
         return null;
@@ -123,7 +122,7 @@ public class PenaltyController {
      */
     @GetMapping("/getPenaltyDistribution")
     public MyResponse getPenaltyDistribution(@RequestParam(value = "year") String year,
-                                             @RequestParam(value = "month") String month) {
+                                              @RequestParam(value = "month") String month) {
         //TODO
 
         return null;
@@ -143,23 +142,12 @@ public class PenaltyController {
     /**
      * 获取机构处罚决定分析
      */
-    @GetMapping("/getAnalysisForOrgan")
-    public MyResponse getAnalysisForOrgan(@RequestParam(value = "year") String year,
+    @GetMapping("/getAnalysis")
+    public MyResponse getAnalysisForOrgan(@RequestParam(value = "type") String type,
+                                          @RequestParam(value = "year") String year,
                                           @RequestParam(value = "month") String month) {
-        //TODO
-
-        return null;
+        return MyResponse.buildSuccess(penaltyService.getAnalysis(type, year, month));
     }
 
-    /**
-     * 获取个人处罚决定分析
-     */
-    @GetMapping("/getAnalysisForIndividual")
-    public MyResponse getAnalysisForIndividual(@RequestParam(value = "year") String year,
-                                               @RequestParam(value = "month") String month) {
-        //TODO
-
-        return null;
-    }
 
 }

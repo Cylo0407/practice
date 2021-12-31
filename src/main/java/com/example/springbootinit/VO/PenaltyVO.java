@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.persistence.Column;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
@@ -47,7 +48,11 @@ public class PenaltyVO {
     @Size(max = 255, message = "处罚决定长度不能超过255")
     private String decision; //行政处罚决定
 
-    @Pattern(regexp = "^\\d+(\\.\\d+)?$", message = "不合法的金额格式")
+    @Excel(name = "行政处罚类型")
+    @Size(max = 64, message = "处罚决定长度不能超过64")
+    private String punishmentType; //行政处罚类型
+
+    @Pattern(regexp = "^\\d+(\\.\\d{1,2})?$", message = "不合法的金额格式")
     @Excel(name = "罚金")
     private String fine;
 

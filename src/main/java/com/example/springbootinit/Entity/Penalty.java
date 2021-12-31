@@ -44,8 +44,11 @@ public class Penalty {
     @Column(name = "decision")
     private String decision; //行政处罚决定
 
+    @Column(name = "punishmentType")
+    private String punishmentType; //行政处罚类型
+
     @Column(name = "fine")
-    private double fine;
+    private double fine; //罚金
 
     @Column(name = "organName", length = 64)
     private String organName; //行政处罚机关名称
