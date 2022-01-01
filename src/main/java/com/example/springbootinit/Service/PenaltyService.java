@@ -92,4 +92,9 @@ public interface PenaltyService {
      * 获取罚单地域分布
      */
     DataListVO<ProvinceDetailVO> getPenaltyDistribution(String year, String month);
+
+    /**
+     * 趋势分析
+     */
+    DataListVO<TrendVO> getAnalysisForTrend(String start, String end);
 }

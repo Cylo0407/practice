@@ -382,4 +382,46 @@ public class PenaltyServiceImpl implements PenaltyService {
             throw new BussinessException("查询出错");
         }
     }
+
+    @Override
+    public DataListVO<TrendVO> getAnalysisForTrend(String start, String end) {
+        try {
+            String presentYear = start.substring(0, 4), presentMonth = start.substring(5, 7);
+            String endYear = end.substring(0, 4), endMonth = end.substring(5, 7);
+            String[] month = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"};
+
+            List<TrendVO> result = new ArrayList<>();
+            while (Integer.parseInt(presentYear) < Integer.parseInt(endYear)) {
+                List<Penalty> penaltyMatch = findAllByDate(presentYear, presentMonth);
+
+                TrendVO t = new TrendVO();
+                t.setTime(presentYear + '-' + presentMonth);
+                t.setAmount(String.format("%.2f", getAmount(penaltyMatch)));
+                t.setCount("" + penaltyMatch.size());
+
+                result.add(t);
+
+                presentMonth = month[Integer.parseInt(presentMonth) % 12];
+                if (presentMonth.equals("01"))
+                    presentYear = String.valueOf(Integer.parseInt(presentYear) + 1);
+            }
+            while (Integer.parseInt(presentMonth) <= Integer.parseInt(endMonth)){
+                List<Penalty> penaltyMatch = findAllByDate(presentYear, presentMonth);
+
+                TrendVO t = new TrendVO();
+                t.setTime(presentYear + '-' + presentMonth);
+                t.setAmount(String.format("%.2f", getAmount(penaltyMatch)));
+                t.setCount("" + penaltyMatch.size());
+
+                result.add(t);
+
+                presentMonth = month[Integer.parseInt(presentMonth) % 12];
+            }
+            DataListVO<TrendVO> dataListVO = new DataListVO<>();
+            dataListVO.setDataList(result);
+            return dataListVO;
+        } catch (DataAccessException e) {
+            throw new BussinessException("查询出错");
+        }
+    }
 }

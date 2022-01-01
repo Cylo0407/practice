@@ -152,4 +152,13 @@ public class PenaltyController {
                                          @RequestParam(value = "month") String month) {
         return MyResponse.buildSuccess(penaltyService.getBasisStatistics(year, month));
     }
+
+    /**
+     * 趋势分析
+     */
+    @GetMapping("/getAnalysisForTrend")
+    public MyResponse getAnalysisForTrend(@RequestParam(value = "start") String start,
+                                          @RequestParam(value = "end") String end) {
+        return MyResponse.buildSuccess(penaltyService.getAnalysisForTrend(start, end));
+    }
 }
