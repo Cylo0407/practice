@@ -7,8 +7,7 @@ import com.example.springbootinit.Service.PenaltyService;
 import com.example.springbootinit.Utils.DataHandle;
 import com.example.springbootinit.Utils.VPMapper.PenaltyMapper;
 import com.example.springbootinit.VO.*;
-import com.example.springbootinit.VO.PunishmentDecisionVO;
-import liquibase.pro.packaged.D;
+import com.example.springbootinit.VO.FrequencyStatisticsVO;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -123,16 +122,16 @@ public class PenaltyServiceImpl implements PenaltyService {
     }
 
     @Override
-    public DataListVO<PunishmentDecisionVO> getAnalysis(String type, String year, String month) {
+    public DataListVO<FrequencyStatisticsVO> getAnalysis(String type, String year, String month) {
         try {
             List<Penalty> penaltyMatch = findAllByDate(Integer.valueOf(type), year, month);
             int countAll = penaltyMatch.size();
             //数据根据处罚类型分组
             Map<String, List<Penalty>> penaltyGroupByPunishmentType = penaltyMatch.stream().collect(Collectors.groupingBy(Penalty::getPunishmentType));
 
-            List<PunishmentDecisionVO> result = new ArrayList<>();
+            List<FrequencyStatisticsVO> result = new ArrayList<>();
             penaltyGroupByPunishmentType.forEach((key, value) -> {
-                PunishmentDecisionVO p = new PunishmentDecisionVO();
+                FrequencyStatisticsVO p = new FrequencyStatisticsVO();
                 p.setType(key);
                 p.setFrequency(String.valueOf(value.size()));
                 p.setRatio(String.format("%.2f", value.size() / (double) countAll));
@@ -141,9 +140,38 @@ public class PenaltyServiceImpl implements PenaltyService {
             });
 
             //按频次降序排序
-            result.sort(Comparator.comparingInt((PunishmentDecisionVO p) -> Integer.parseInt(p.getFrequency())).reversed());
+            result.sort(Comparator.comparingInt((FrequencyStatisticsVO p) -> Integer.parseInt(p.getFrequency())).reversed());
 
-            DataListVO<PunishmentDecisionVO> dataListVO = new DataListVO<>();
+            DataListVO<FrequencyStatisticsVO> dataListVO = new DataListVO<>();
+            dataListVO.setDataList(result);
+            return dataListVO;
+        } catch (DataAccessException e) {
+            throw new BussinessException("查询出错");
+        }
+    }
+
+    @Override
+    public DataListVO<FrequencyStatisticsVO> getBasisStatistics(String year, String month) {
+        try {
+            List<Penalty> penaltyMatch = findAllByDate(year, month);
+            int countAll = penaltyMatch.size();
+            //数据根据处罚类型分组
+            Map<String, List<Penalty>> penaltyGroupByBasis = penaltyMatch.stream().collect(Collectors.groupingBy(Penalty::getBasis));
+
+            List<FrequencyStatisticsVO> result = new ArrayList<>();
+            penaltyGroupByBasis.forEach((key, value) -> {
+                FrequencyStatisticsVO p = new FrequencyStatisticsVO();
+                p.setType(key);
+                p.setFrequency(String.valueOf(value.size()));
+                p.setRatio(String.format("%.2f", value.size() / (double) countAll));
+                p.setAmount(String.format("%.2f", getAmount(value)));
+                result.add(p);
+            });
+
+            //按频次降序排序
+            result.sort(Comparator.comparingInt((FrequencyStatisticsVO p) -> Integer.parseInt(p.getFrequency())).reversed());
+
+            DataListVO<FrequencyStatisticsVO> dataListVO = new DataListVO<>();
             dataListVO.setDataList(result);
             return dataListVO;
         } catch (DataAccessException e) {

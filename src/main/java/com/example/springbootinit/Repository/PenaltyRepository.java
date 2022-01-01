@@ -1,15 +1,10 @@
 package com.example.springbootinit.Repository;
 
 import com.example.springbootinit.Entity.Penalty;
-import com.example.springbootinit.VO.OrganDetailVO;
-import com.example.springbootinit.VO.PunishmentDecisionVO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 public interface PenaltyRepository extends JpaRepository<Penalty, Integer> ,JpaSpecificationExecutor<Penalty> {

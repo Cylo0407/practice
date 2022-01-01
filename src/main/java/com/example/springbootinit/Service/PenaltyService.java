@@ -54,9 +54,15 @@ public interface PenaltyService {
 
 
     /**
-     * 查询处罚决定分析
+     * 处罚决定分析
      */
-    DataListVO<PunishmentDecisionVO> getAnalysis(String type, String year, String month);
+    DataListVO<FrequencyStatisticsVO> getAnalysis(String type, String year, String month);
+
+
+    /**
+     * 违规点分析
+     */
+    DataListVO<FrequencyStatisticsVO> getBasisStatistics(String year, String month);
 
 
     /**

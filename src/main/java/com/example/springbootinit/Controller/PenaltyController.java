@@ -144,5 +144,12 @@ public class PenaltyController {
         return MyResponse.buildSuccess(penaltyService.getAnalysis(type, year, month));
     }
 
-
+    /**
+     * 获取违规点分析
+     */
+    @GetMapping("/getBasisStatistics")
+    public MyResponse getBasisStatistics(@RequestParam(value = "year") String year,
+                                         @RequestParam(value = "month") String month) {
+        return MyResponse.buildSuccess(penaltyService.getBasisStatistics(year, month));
+    }
 }

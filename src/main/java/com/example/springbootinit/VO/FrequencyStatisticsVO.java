@@ -3,7 +3,7 @@ package com.example.springbootinit.VO;
 import lombok.Data;
 
 @Data
-public class PunishmentDecisionVO {
+public class FrequencyStatisticsVO {
     private String type; //处罚类型
 
     private String frequency; //频次
