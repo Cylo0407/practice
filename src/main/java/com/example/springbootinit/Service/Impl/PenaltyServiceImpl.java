@@ -4,9 +4,11 @@ import com.example.springbootinit.Entity.Penalty;
 import com.example.springbootinit.Exception.BussinessException;
 import com.example.springbootinit.Repository.PenaltyRepository;
 import com.example.springbootinit.Service.PenaltyService;
+import com.example.springbootinit.Utils.DataHandle;
 import com.example.springbootinit.Utils.VPMapper.PenaltyMapper;
 import com.example.springbootinit.VO.*;
 import com.example.springbootinit.VO.PunishmentDecisionVO;
+import liquibase.pro.packaged.D;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import javax.persistence.criteria.Predicate;
 import java.lang.reflect.Field;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -122,7 +125,7 @@ public class PenaltyServiceImpl implements PenaltyService {
     @Override
     public DataListVO<PunishmentDecisionVO> getAnalysis(String type, String year, String month) {
         try {
-            List<Penalty> penaltyMatch = penaltyRepository.findAllByTypeAndDate(Integer.valueOf(type), year, month);
+            List<Penalty> penaltyMatch = findAllByDate(Integer.valueOf(type), year, month);
             int countAll = penaltyMatch.size();
             //数据根据处罚类型分组
             Map<String, List<Penalty>> penaltyGroupByPunishmentType = penaltyMatch.stream().collect(Collectors.groupingBy(Penalty::getPunishmentType));
@@ -152,7 +155,9 @@ public class PenaltyServiceImpl implements PenaltyService {
     public DataListVO<PenaltyVO> getPenaltyOrderByFine(String year, String month) {
         try {
             DataListVO<PenaltyVO> dataListVO = new DataListVO<>();
-            dataListVO.setDataList(PenaltyMapper.INSTANCE.pList2vList(penaltyRepository.findAllOrderByFine(year, month)));
+            List<Penalty> penaltyMatch = findAllByDate(year, month);
+            List<Penalty> sortedList = penaltyMatch.stream().sorted(Comparator.comparingDouble((Penalty::getFine)).reversed()).limit(10).collect(Collectors.toList());
+            dataListVO.setDataList(PenaltyMapper.INSTANCE.pList2vList(sortedList));
             return dataListVO;
         } catch (DataAccessException e) {
             throw new BussinessException("查询出错");
@@ -163,7 +168,7 @@ public class PenaltyServiceImpl implements PenaltyService {
     @Override
     public DataListVO<ProvinceDetailVO> getPenaltyDistribution(String year, String month) {
         try {
-            List<Penalty> penaltyMatch = penaltyRepository.findAllByDate(year, month);
+            List<Penalty> penaltyMatch = findAllByDate(year, month);
             int countAll = penaltyMatch.size();
             double amountAll = getAmount(penaltyMatch);
             //数据根据省份分组
@@ -207,7 +212,7 @@ public class PenaltyServiceImpl implements PenaltyService {
     public SummaryVO getSummary(String year, String month) {
         SummaryVO summaryVO = new SummaryVO();
         //现在的年月
-        List<Penalty> presentList = penaltyRepository.findAllByDate(year, month);
+        List<Penalty> presentList = findAllByDate(year, month);
         summaryVO.setTotal("" + presentList.size()); //罚单合计
         double amountOfSummary = getAmount(presentList);
         summaryVO.setAmount("" + amountOfSummary); //累计罚没金额
@@ -223,7 +228,7 @@ public class PenaltyServiceImpl implements PenaltyService {
 
         //去年同月
         String pastyear = String.valueOf(Integer.parseInt(year) - 1);
-        List<Penalty> lastList = penaltyRepository.findAllByDate(pastyear, month);
+        List<Penalty> lastList = findAllByDate(pastyear, month);
         summaryVO.setLastTotal("" + lastList.size()); //去年罚单合计
         summaryVO.setLastAmount("" + getAmount(lastList)); //去年累计罚没金额
 
@@ -253,11 +258,26 @@ public class PenaltyServiceImpl implements PenaltyService {
         return summaryVO;
     }
 
-    private Double getAmount(List<Penalty> penaltyList) {
+    private double getAmount(List<Penalty> penaltyList) {
         return penaltyList.stream().mapToDouble(Penalty::getFine).sum();
     }
 
-    public Map<String, Integer> getMapOfSummary(List<Penalty> penaltyList) {
+    private List<Penalty> findAllByDate(String year, String month) {
+        //若month为"00"则统计一年的数据
+        LocalDate startDate = DataHandle.string2Date(month.equals("00") ? year + "-01-01" : year + "-" + month + "-01");
+        LocalDate endDate = month.equals("00") ? startDate.plusYears(1).minusDays(1) : startDate.plusMonths(1).minusDays(1);
+        return penaltyRepository.findAllByDateBetween(startDate, endDate);
+    }
+
+    private List<Penalty> findAllByDate(Integer type, String year, String month) {
+        //若month为"00"则统计一年的数据
+        LocalDate startDate = DataHandle.string2Date(month.equals("00") ? year + "-01-01" : year + "-" + month + "-01");
+        LocalDate endDate = month.equals("00") ? startDate.plusYears(1).minusDays(1) : startDate.plusMonths(1).minusDays(1);
+        return penaltyRepository.findAllByTypeAndDateBetween(type, startDate, endDate);
+    }
+
+
+    private Map<String, Integer> getMapOfSummary(List<Penalty> penaltyList) {
         Map<String, Integer> map = new HashMap<>();
         for (Penalty penalty : penaltyList) {
             if (!map.containsKey(penalty.getName())) map.put(penalty.getName(), penalty.getType());
@@ -265,7 +285,7 @@ public class PenaltyServiceImpl implements PenaltyService {
         return map;
     }
 
-    public List<Penalty> getBranchToalOfSummary(List<Penalty> penaltyList, int flag) { //flag 为0是分行；为1是中心支行
+    private List<Penalty> getBranchToalOfSummary(List<Penalty> penaltyList, int flag) { //flag 为0是分行；为1是中心支行
         List<Penalty> branchList = new ArrayList<>();
         List<Penalty> centerBranchList = new ArrayList<>();
 
@@ -282,7 +302,7 @@ public class PenaltyServiceImpl implements PenaltyService {
     @Override
     public DataListVO<OrganDetailVO> getOrganListOrderByCount(String year, String month) {
         try {
-            List<Penalty> penaltyMatch = penaltyRepository.findAllByDate(year, month);
+            List<Penalty> penaltyMatch = findAllByDate(year, month);
 
             //数据根据name分组
             Map<String, List<Penalty>> penaltyGroupByName = penaltyMatch.stream().collect(Collectors.groupingBy(Penalty::getName));
@@ -310,7 +330,7 @@ public class PenaltyServiceImpl implements PenaltyService {
     @Override
     public DataListVO<OrganDetailVO> getOrganListOrderByFine(String year, String month) {
         try {
-            List<Penalty> penaltyMatch = penaltyRepository.findAllByDate(year, month);
+            List<Penalty> penaltyMatch = findAllByDate(year, month);
 
             //数据根据name分组
             Map<String, List<Penalty>> penaltyGroupByFine = penaltyMatch.stream().collect(Collectors.groupingBy(Penalty::getName));

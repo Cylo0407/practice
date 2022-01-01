@@ -28,24 +28,24 @@ public interface PenaltyRepository extends JpaRepository<Penalty, Integer> ,JpaS
             nativeQuery = true)
     List<Object[]> getAnalysis(Integer type, String year, String month);*/
 
-    @Query(value =
+     /*@Query(value =
             "Select * " +
                     "From Penalty " +
                     "Where year(date) = :year and month(date) = :month "
             , nativeQuery = true)
     List<Penalty> findAllByDate(@Param("year") String year,
-                                @Param("month") String month);
+                                @Param("month") String month);*/
 
-    @Query(value =
+  /*  @Query(value =
             "Select * " +
                     "From Penalty " +
                     "Where type = :type and year(date) = :year and month(date) = :month "
             , nativeQuery = true)
     List<Penalty> findAllByTypeAndDate(@Param("type") Integer type,
                                        @Param("year") String year,
-                                       @Param("month") String month);
+                                       @Param("month") String month);*/
 
-    @Query(value =
+    /*@Query(value =
             "Select * " +
                     "From Penalty " +
                     "Where year(date) = :year and month(date) = :month " +
@@ -53,5 +53,10 @@ public interface PenaltyRepository extends JpaRepository<Penalty, Integer> ,JpaS
                     "Limit 10 "
             , nativeQuery = true)
     List<Penalty> findAllOrderByFine(@Param("year") String year,
-                                     @Param("month") String month);
+                                     @Param("month") String month);*/
+
+    List<Penalty> findAllByDateBetween(LocalDate startDate, LocalDate endDate);
+
+    List<Penalty> findAllByTypeAndDateBetween(Integer type, LocalDate startDate, LocalDate endDate);
+
 }
