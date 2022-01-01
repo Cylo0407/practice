@@ -132,7 +132,7 @@ public class PenaltyServiceImpl implements PenaltyService {
                 PunishmentDecisionVO p = new PunishmentDecisionVO();
                 p.setType(key);
                 p.setFrequency(String.valueOf(value.size()));
-                p.setRatio(String.format("%.2f", value.size() / (double)countAll));
+                p.setRatio(String.format("%.2f", value.size() / (double) countAll));
                 p.setAmount(String.format("%.2f", getAmount(value)));
                 result.add(p);
             });
@@ -143,7 +143,7 @@ public class PenaltyServiceImpl implements PenaltyService {
             DataListVO<PunishmentDecisionVO> dataListVO = new DataListVO<>();
             dataListVO.setDataList(result);
             return dataListVO;
-        }catch (DataAccessException e) {
+        } catch (DataAccessException e) {
             throw new BussinessException("查询出错");
         }
     }
@@ -154,7 +154,7 @@ public class PenaltyServiceImpl implements PenaltyService {
             DataListVO<PenaltyVO> dataListVO = new DataListVO<>();
             dataListVO.setDataList(PenaltyMapper.INSTANCE.pList2vList(penaltyRepository.findAllOrderByFine(year, month)));
             return dataListVO;
-        }catch (DataAccessException e) {
+        } catch (DataAccessException e) {
             throw new BussinessException("查询出错");
         }
     }
@@ -198,7 +198,7 @@ public class PenaltyServiceImpl implements PenaltyService {
             DataListVO<ProvinceDetailVO> dataListVO = new DataListVO<>();
             dataListVO.setDataList(result);
             return dataListVO;
-        }catch (DataAccessException e) {
+        } catch (DataAccessException e) {
             throw new BussinessException("查询出错");
         }
     }
@@ -280,20 +280,57 @@ public class PenaltyServiceImpl implements PenaltyService {
     }
 
     @Override
-    public List<OrganDetailVO> getOrganListOrderByCount(String year, String month){
+    public DataListVO<OrganDetailVO> getOrganListOrderByCount(String year, String month) {
         try {
-            return penaltyRepository.findAllByCountAndDate(year, month);
-        }catch (DataAccessException e) {
+            List<Penalty> penaltyMatch = penaltyRepository.findAllByDate(year, month);
+
+            //数据根据name分组
+            Map<String, List<Penalty>> penaltyGroupByName = penaltyMatch.stream().collect(Collectors.groupingBy(Penalty::getName));
+
+            List<OrganDetailVO> result = new ArrayList<>();
+            penaltyGroupByName.forEach((key, value) -> {
+                OrganDetailVO og = new OrganDetailVO();
+                og.setName(key);
+                og.setCount(String.valueOf(value.size()));
+                og.setAmount(String.format("%.2f", getAmount(value)));
+
+                result.add(og);
+            });
+            //按罚单数降序排序
+            result.sort(Comparator.comparingInt((OrganDetailVO organDetailVO) -> Integer.parseInt(organDetailVO.getCount())).reversed());
+
+            DataListVO<OrganDetailVO> dataListVO = new DataListVO<>();
+            dataListVO.setDataList(result);
+            return dataListVO;
+        } catch (DataAccessException e) {
             throw new BussinessException("查询出错");
         }
     }
 
     @Override
-    public List<OrganDetailVO> getOrganListOrderByFine(String year, String month){
+    public DataListVO<OrganDetailVO> getOrganListOrderByFine(String year, String month) {
         try {
-            List<OrganDetailVO> organDetailVOList = penaltyRepository.findAllByFineAndDate(year, month);
-            return organDetailVOList;
-        }catch (DataAccessException e) {
+            List<Penalty> penaltyMatch = penaltyRepository.findAllByDate(year, month);
+
+            //数据根据name分组
+            Map<String, List<Penalty>> penaltyGroupByFine = penaltyMatch.stream().collect(Collectors.groupingBy(Penalty::getName));
+
+            List<OrganDetailVO> result = new ArrayList<>();
+            penaltyGroupByFine.forEach((key, value) -> {
+                OrganDetailVO og = new OrganDetailVO();
+                og.setName(key);
+                og.setCount(String.valueOf(value.size()));
+                og.setAmount(String.format("%.2f", getAmount(value)));
+
+                result.add(og);
+            });
+            //按罚单数降序排序
+            result.sort(Comparator.comparingDouble((OrganDetailVO organDetailVO) -> Double.parseDouble(organDetailVO.getAmount())).reversed());
+
+            DataListVO<OrganDetailVO> dataListVO = new DataListVO<>();
+            dataListVO.setDataList(result);
+            return dataListVO;
+        } catch (DataAccessException e) {
             throw new BussinessException("查询出错");
         }
     }

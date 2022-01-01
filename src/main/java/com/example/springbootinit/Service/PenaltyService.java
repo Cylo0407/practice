@@ -74,13 +74,13 @@ public interface PenaltyService {
     /**
      * 获取机构罚单笔数排行
      */
-    List<OrganDetailVO> getOrganListOrderByCount(String year, String month);
+    DataListVO<OrganDetailVO> getOrganListOrderByCount(String year, String month);
 
 
     /**
      * 获取机构罚没金额排行
      */
-    List<OrganDetailVO> getOrganListOrderByFine(String year, String month);
+    DataListVO<OrganDetailVO> getOrganListOrderByFine(String year, String month);
 
     /**
      * 获取罚单地域分布

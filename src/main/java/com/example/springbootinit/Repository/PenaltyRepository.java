@@ -54,27 +54,4 @@ public interface PenaltyRepository extends JpaRepository<Penalty, Integer> ,JpaS
             , nativeQuery = true)
     List<Penalty> findAllOrderByFine(@Param("year") String year,
                                      @Param("month") String month);
-
-    @Query(value =
-            "SELECT name, count(*) as count, sum(fine) as amount " +
-                    "From Penalty " +
-                    "Where year(date) = :year and month(date) = :month " +
-                    "group by name " +
-                    "Order by count Desc " +
-                    "Limit 10 "
-            , nativeQuery = true)
-    List findAllByCountAndDate(@Param("year") String year,
-                               @Param("month") String month);
-
-    @Query(value =
-            "SELECT name, count(*) as count, sum(fine) as amount " +
-            "From Penalty " +
-            "Where year(date) = :year and month(date) = :month " +
-            "group by name " +
-            "Order by amount Desc " +
-            "Limit 10 "
-            , nativeQuery = true)
-    List findAllByFineAndDate(@Param("year") String year,
-                              @Param("month") String month);
-
 }
