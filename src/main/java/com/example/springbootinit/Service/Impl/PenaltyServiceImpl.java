@@ -19,11 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import javax.persistence.criteria.Predicate;
 import java.lang.reflect.Field;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,7 +39,7 @@ public class PenaltyServiceImpl implements PenaltyService {
     }
 
     @Override
-    public DataListVO insertPenalties(List<PenaltyVO> penaltyList) {
+    public DataListVO<PenaltyVO> insertPenalties(List<PenaltyVO> penaltyList) {
         DataListVO<PenaltyVO> resDataList = new DataListVO<>();
         resDataList.setDataList(penaltyList.stream().map(this::insertPenalty).collect(Collectors.toList()));
         return resDataList;
@@ -94,7 +90,7 @@ public class PenaltyServiceImpl implements PenaltyService {
             Penalty penalty = PenaltyMapper.INSTANCE.v2p(penaltyVO);
             Specification<Penalty> query = (root, query1, criteriaBuilder) -> {
                 List<Predicate> predicates = new ArrayList<>();
-                Class penaltyClass = (Class) penalty.getClass();
+                Class penaltyClass = penalty.getClass();
                 Field[] fs = penaltyClass.getDeclaredFields();
                 try {
                     for (Field f : fs) {
@@ -142,7 +138,7 @@ public class PenaltyServiceImpl implements PenaltyService {
             });
 
             //按频次降序排序
-            Collections.sort(result, Comparator.comparingInt((PunishmentDecisionVO p)-> Integer.parseInt(p.getFrequency())).reversed());
+            result.sort(Comparator.comparingInt((PunishmentDecisionVO p) -> Integer.parseInt(p.getFrequency())).reversed());
 
             DataListVO<PunishmentDecisionVO> dataListVO = new DataListVO<>();
             dataListVO.setDataList(result);
@@ -153,10 +149,10 @@ public class PenaltyServiceImpl implements PenaltyService {
     }
 
     @Override
-    public DataListVO getPenaltyOrderByFine(String year, String month) {
+    public DataListVO<PenaltyVO> getPenaltyOrderByFine(String year, String month) {
         try {
-            DataListVO dataListVO = new DataListVO();
-            dataListVO.setDataList(penaltyRepository.findAllOrderByFine(year, month));
+            DataListVO<PenaltyVO> dataListVO = new DataListVO<>();
+            dataListVO.setDataList(PenaltyMapper.INSTANCE.pList2vList(penaltyRepository.findAllOrderByFine(year, month)));
             return dataListVO;
         }catch (DataAccessException e) {
             throw new BussinessException("查询出错");
@@ -165,7 +161,7 @@ public class PenaltyServiceImpl implements PenaltyService {
 
 
     @Override
-    public DataListVO getPenaltyDistribution(String year, String month) {
+    public DataListVO<ProvinceDetailVO> getPenaltyDistribution(String year, String month) {
         try {
             List<Penalty> penaltyMatch = penaltyRepository.findAllByDate(year, month);
             int countAll = penaltyMatch.size();
@@ -197,7 +193,7 @@ public class PenaltyServiceImpl implements PenaltyService {
                 result.add(p);
             });
             //按订单数降序排序
-            Collections.sort(result, Comparator.comparingInt((ProvinceDetailVO p) -> Integer.parseInt(p.getCount())).reversed());
+            result.sort(Comparator.comparingInt((ProvinceDetailVO p) -> Integer.parseInt(p.getCount())).reversed());
 
             DataListVO<ProvinceDetailVO> dataListVO = new DataListVO<>();
             dataListVO.setDataList(result);
@@ -286,8 +282,7 @@ public class PenaltyServiceImpl implements PenaltyService {
     @Override
     public List<OrganDetailVO> getOrganListOrderByCount(String year, String month){
         try {
-            List<OrganDetailVO> organDetailVOList = penaltyRepository.findAllByCountAndDate(year, month);
-            return organDetailVOList;
+            return penaltyRepository.findAllByCountAndDate(year, month);
         }catch (DataAccessException e) {
             throw new BussinessException("查询出错");
         }

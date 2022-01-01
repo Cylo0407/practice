@@ -18,7 +18,7 @@ public interface PenaltyService {
      * 批量新增行政处罚记录
      * @param penaltyList 行政处罚记录对象列表
      */
-    DataListVO insertPenalties(List<PenaltyVO> penaltyList);
+    DataListVO<PenaltyVO> insertPenalties(List<PenaltyVO> penaltyList);
 
 
     /**
@@ -43,21 +43,20 @@ public interface PenaltyService {
     /**
      * @param status
      * @param ids
-     * @return
      */
-    DataListVO changePenaltyStatus(String status, List<String> ids);
+    DataListVO<PenaltyVO> changePenaltyStatus(String status, List<String> ids);
 
 
     /**
      * 查询所有行政处罚记录
      */
-    DataListVO findAllPenalty(PenaltyVO penaltyVO, int pageNumber, int pageSize, boolean isVague);
+    DataListVO<PenaltyVO> findAllPenalty(PenaltyVO penaltyVO, int pageNumber, int pageSize, boolean isVague);
 
 
     /**
      * 查询处罚决定分析
      */
-    DataListVO getAnalysis(String type, String year, String month);
+    DataListVO<PunishmentDecisionVO> getAnalysis(String type, String year, String month);
 
 
     /**
@@ -69,7 +68,7 @@ public interface PenaltyService {
     /**
      * 获取该年月的大额罚单详情
      */
-    DataListVO getPenaltyOrderByFine(String year, String month);
+    DataListVO<PenaltyVO> getPenaltyOrderByFine(String year, String month);
 
 
     /**

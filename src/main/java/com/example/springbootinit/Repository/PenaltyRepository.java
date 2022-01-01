@@ -30,16 +30,16 @@ public interface PenaltyRepository extends JpaRepository<Penalty, Integer> ,JpaS
 
     @Query(value =
             "Select * " +
-            "From Penalty " +
-            "Where year(date) = :year and month(date) = :month "
+                    "From Penalty " +
+                    "Where year(date) = :year and month(date) = :month "
             , nativeQuery = true)
     List<Penalty> findAllByDate(@Param("year") String year,
                                 @Param("month") String month);
 
     @Query(value =
             "Select * " +
-            "From Penalty " +
-            "Where type = :type and year(date) = :year and month(date) = :month "
+                    "From Penalty " +
+                    "Where type = :type and year(date) = :year and month(date) = :month "
             , nativeQuery = true)
     List<Penalty> findAllByTypeAndDate(@Param("type") Integer type,
                                        @Param("year") String year,
@@ -47,10 +47,10 @@ public interface PenaltyRepository extends JpaRepository<Penalty, Integer> ,JpaS
 
     @Query(value =
             "Select * " +
-            "From Penalty " +
-            "Where year(date) = :year and month(date) = :month " +
-            "Order by fine Desc " +
-            "Limit 10 "
+                    "From Penalty " +
+                    "Where year(date) = :year and month(date) = :month " +
+                    "Order by fine Desc " +
+                    "Limit 10 "
             , nativeQuery = true)
     List<Penalty> findAllOrderByFine(@Param("year") String year,
                                      @Param("month") String month);
@@ -64,20 +64,17 @@ public interface PenaltyRepository extends JpaRepository<Penalty, Integer> ,JpaS
                     "Limit 10 "
             , nativeQuery = true)
     List findAllByCountAndDate(@Param("year") String year,
-                                              @Param("month") String month);
+                               @Param("month") String month);
 
     @Query(value =
             "SELECT name, count(*) as count, sum(fine) as amount " +
-                    "From Penalty " +
-                    "Where year(date) = :year and month(date) = :month " +
-                    "group by name " +
-                    "Order by amount Desc " +
-                    "Limit 10 "
+            "From Penalty " +
+            "Where year(date) = :year and month(date) = :month " +
+            "group by name " +
+            "Order by amount Desc " +
+            "Limit 10 "
             , nativeQuery = true)
     List findAllByFineAndDate(@Param("year") String year,
-                               @Param("month") String month);
-//    from penalty
-//    where year(date)='2016' and month(date)='07'
-//    group by name
-//    order by count desc
+                              @Param("month") String month);
+
 }
