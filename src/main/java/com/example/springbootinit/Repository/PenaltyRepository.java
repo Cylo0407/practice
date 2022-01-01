@@ -30,7 +30,7 @@ public interface PenaltyRepository extends JpaRepository<Penalty, Integer> ,JpaS
     @Query(value =
             "Select * " +
             "From Penalty " +
-            "Where type = :type and year(date) = :year and month(date) = :month "
+            "Where year(date) = :year and month(date) = :month "
             , nativeQuery = true)
     List<Penalty> findAllByDate(@Param("year") String year,
                                 @Param("month") String month);

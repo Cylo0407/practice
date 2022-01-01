@@ -122,9 +122,8 @@ public class PenaltyController {
     @GetMapping("/getPenaltyDistribution")
     public MyResponse getPenaltyDistribution(@RequestParam(value = "year") String year,
                                              @RequestParam(value = "month") String month) {
-        //TODO
 
-        return null;
+        return MyResponse.buildSuccess(penaltyService.getPenaltyDistribution(year, month));
     }
 
     /**

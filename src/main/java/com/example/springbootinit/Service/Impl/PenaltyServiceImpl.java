@@ -7,12 +7,9 @@ import com.example.springbootinit.Service.PenaltyService;
 import com.example.springbootinit.Utils.DataHandle;
 import com.example.springbootinit.Utils.MyResponse;
 import com.example.springbootinit.Utils.VPMapper.PenaltyMapper;
-import com.example.springbootinit.VO.DataListVO;
-import com.example.springbootinit.VO.PenaltyVO;
-import com.example.springbootinit.VO.SummaryVO;
+import com.example.springbootinit.VO.*;
 import liquibase.pro.packaged.D;
 import liquibase.pro.packaged.S;
-import com.example.springbootinit.VO.PunishmentDecisionVO;
 import org.apache.tomcat.jni.Local;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
@@ -50,7 +47,7 @@ public class PenaltyServiceImpl implements PenaltyService {
     }
 
     @Override
-    public DataListVO<PenaltyVO> insertPenalties(List<PenaltyVO> penaltyList) {
+    public DataListVO insertPenalties(List<PenaltyVO> penaltyList) {
         DataListVO<PenaltyVO> resDataList = new DataListVO<>();
         resDataList.setDataList(penaltyList.stream().map(this::insertPenalty).collect(Collectors.toList()));
         return resDataList;
@@ -80,7 +77,7 @@ public class PenaltyServiceImpl implements PenaltyService {
     }
 
     @Override
-    public DataListVO<PenaltyVO> changePenaltyStatus(String status, List<String> ids) {
+    public DataListVO changePenaltyStatus(String status, List<String> ids) {
         List<PenaltyVO> penaltyList = new ArrayList<>();
         ids.forEach(id -> {
             Penalty penalty = penaltyRepository.findById(Integer.parseInt(id))
@@ -94,7 +91,7 @@ public class PenaltyServiceImpl implements PenaltyService {
     }
 
     @Override
-    public DataListVO<PenaltyVO> findAllPenalty(PenaltyVO penaltyVO, int pageNumber, int pageSize, boolean isVague) {
+    public DataListVO findAllPenalty(PenaltyVO penaltyVO, int pageNumber, int pageSize, boolean isVague) {
         try {
             Sort.Direction sort = Sort.Direction.ASC;
             Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, sort, "id");
@@ -131,7 +128,7 @@ public class PenaltyServiceImpl implements PenaltyService {
     }
 
     @Override
-    public DataListVO<PunishmentDecisionVO> getAnalysis(String type, String year, String month) {
+    public DataListVO getAnalysis(String type, String year, String month) {
         try {
             List<Penalty> penaltyMatch = penaltyRepository.findAllByTypeAndDate(Integer.valueOf(type), year, month);
             int countAll = penaltyMatch.size();
@@ -144,11 +141,13 @@ public class PenaltyServiceImpl implements PenaltyService {
                 p.setType(key);
                 p.setFrequency(String.valueOf(value.size()));
                 p.setRatio(String.format("%.2f", value.size() / (double)countAll));
-                p.setAmount(String.format("%.2f", value.stream().mapToDouble(Penalty::getFine).sum()));
+                p.setAmount(String.format("%.2f", getAmount(value)));
                 result.add(p);
             });
 
-            Collections.sort(result, Comparator.comparingInt(p -> Integer.valueOf(p.getFrequency())));
+            //按频次降序排序
+            Collections.sort(result, Comparator.comparingInt((PunishmentDecisionVO p)-> Integer.parseInt(p.getFrequency())).reversed());
+
             DataListVO<PunishmentDecisionVO> dataListVO = new DataListVO<>();
             dataListVO.setDataList(result);
             return dataListVO;
@@ -168,13 +167,57 @@ public class PenaltyServiceImpl implements PenaltyService {
         }
     }
 
+
+    @Override
+    public DataListVO getPenaltyDistribution(String year, String month) {
+        try {
+            List<Penalty> penaltyMatch = penaltyRepository.findAllByDate(year, month);
+            int countAll = penaltyMatch.size();
+            double amountAll = getAmount(penaltyMatch);
+            //数据根据省份分组
+            Map<String, List<Penalty>> penaltyGroupByProvince = penaltyMatch.stream().collect(Collectors.groupingBy(Penalty::getProvince));
+
+            List<ProvinceDetailVO> result = new ArrayList<>();
+            penaltyGroupByProvince.forEach((key, value) -> {
+                double amount = getAmount(value);
+                //数据根据类型分组
+                Map<Integer, List<Penalty>> penaltyGroupByType = value.stream().collect(Collectors.groupingBy(Penalty::getType));
+                List<Penalty> organPenaltyList = penaltyGroupByType.getOrDefault(1, new ArrayList<>());
+                List<Penalty> personalPenaltyList = penaltyGroupByType.getOrDefault(0, new ArrayList<>());
+                double organAmount = getAmount(organPenaltyList);
+                double personalAmount = getAmount(personalPenaltyList);
+
+                ProvinceDetailVO p = new ProvinceDetailVO();
+                p.setProvince(key);
+                p.setCount(String.valueOf(value.size()));
+                p.setCountRatio(String.format("%.2f", value.size() / (double) countAll));
+                p.setAmount(String.format("%.2f", amount));
+                p.setAmountRatio(String.format("%.2f", amount / amountAll));
+                p.setAmountOrganization(String.format("%.2f", organAmount));
+                p.setAmountPersonal(String.format("%.2f", personalAmount));
+                p.setCountOrganization(String.valueOf(organPenaltyList.size()));
+                p.setCountPersonal(String.valueOf(personalPenaltyList.size()));
+
+                result.add(p);
+            });
+            //按订单数降序排序
+            Collections.sort(result, Comparator.comparingInt((ProvinceDetailVO p) -> Integer.parseInt(p.getCount())).reversed());
+
+            DataListVO<ProvinceDetailVO> dataListVO = new DataListVO<>();
+            dataListVO.setDataList(result);
+            return dataListVO;
+        }catch (DataAccessException e) {
+            throw new BussinessException("查询出错");
+        }
+    }
+
     @Override
     public SummaryVO getSummary(String year, String month) {
         SummaryVO summaryVO = new SummaryVO();
         //现在的年月
         List<Penalty> presentList = penaltyRepository.findAllByDate(year, month);
         summaryVO.setTotal("" + presentList.size()); //罚单合计
-        double amountOfSummary = presentList.stream().mapToDouble(Penalty::getFine).sum();
+        double amountOfSummary = getAmount(presentList);
         summaryVO.setAmount("" + amountOfSummary); //累计罚没金额
 
         int countOrganization = 0, countPersonal = 0;
@@ -190,7 +233,7 @@ public class PenaltyServiceImpl implements PenaltyService {
         String pastyear = String.valueOf(Integer.parseInt(year) - 1);
         List<Penalty> lastList = penaltyRepository.findAllByDate(pastyear, month);
         summaryVO.setLastTotal("" + lastList.size()); //去年罚单合计
-        summaryVO.setLastAmount("" + getAmountOfSummary(lastList)); //去年累计罚没金额
+        summaryVO.setLastAmount("" + getAmount(lastList)); //去年累计罚没金额
 
         int lastCountOrganization = 0, lastCountPersonal = 0;
         Map<String, Integer> pastMap = getMapOfSummary(lastList);
@@ -205,25 +248,21 @@ public class PenaltyServiceImpl implements PenaltyService {
         List<Penalty> branchList = getBranchToalOfSummary(presentList, 0);
         summaryVO.setBranchTotal("" + branchList.size()); //分行罚单合计
         summaryVO.setBranchTotalRatio(String.format("%.2f", (double) branchList.size() / presentList.size())); //分行罚单百分比
-        summaryVO.setBranchAmount("" + getAmountOfSummary(branchList)); //分行累计罚没金额
-        summaryVO.setBranchAmountRatio(String.format("%.2f", getAmountOfSummary(branchList) / amountOfSummary)); //分行罚没金额百分比
+        summaryVO.setBranchAmount("" + getAmount(branchList)); //分行累计罚没金额
+        summaryVO.setBranchAmountRatio(String.format("%.2f", getAmount(branchList) / amountOfSummary)); //分行罚没金额百分比
 
         //中心支行相关
         List<Penalty> centerBranchList = getBranchToalOfSummary(presentList, 1);
         summaryVO.setCenterBranchTotal("" + centerBranchList.size()); //中心支行罚单合计
         summaryVO.setCenterBranchTotalRatio(String.format("%.2f", (double) centerBranchList.size() / presentList.size())); //中心支行罚单百分比
-        summaryVO.setCenterBranchAmount("" + getAmountOfSummary(centerBranchList)); //中心支行累计罚没金额
-        summaryVO.setCenterBranchAmountRatio(String.format("%.2f", getAmountOfSummary(centerBranchList) / amountOfSummary)); //中心支行罚没金额百分比
+        summaryVO.setCenterBranchAmount("" + getAmount(centerBranchList)); //中心支行累计罚没金额
+        summaryVO.setCenterBranchAmountRatio(String.format("%.2f", getAmount(centerBranchList) / amountOfSummary)); //中心支行罚没金额百分比
 
         return summaryVO;
     }
 
-    private Double getAmountOfSummary(List<Penalty> penaltyList) {
-        double amount = 0.0;
-        for(Penalty penalty : penaltyList)
-            amount += penalty.getFine();
-
-        return amount;
+    private Double getAmount(List<Penalty> penaltyList) {
+        return penaltyList.stream().mapToDouble(Penalty::getFine).sum();
     }
 
     public Map<String, Integer> getMapOfSummary(List<Penalty> penaltyList) {
