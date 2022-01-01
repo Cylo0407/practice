@@ -1,8 +1,7 @@
 package com.example.springbootinit.Service;
 
-import com.example.springbootinit.Utils.MyResponse;
 import com.example.springbootinit.VO.*;
-import org.springframework.web.bind.annotation.RequestParam;
+
 
 import java.util.List;
 
@@ -58,7 +57,7 @@ public interface PenaltyService {
     /**
      * 查询处罚决定分析
      */
-    DataListVO<PunishmentDecisionVO> getAnalysis(String type, String year, String month);
+    DataListVO getAnalysis(String type, String year, String month);
 
 
     /**
@@ -70,9 +69,19 @@ public interface PenaltyService {
     /**
      * 获取该年月的大额罚单详情
      */
-    DataListVO<PenaltyVO> getPenaltyOrderByFine(String year, String month);
+    DataListVO getPenaltyOrderByFine(String year, String month);
 
 
+    /**
+     * 获取机构罚单笔数排行
+     */
+    List<OrganDetailVO> getOrganListOrderByCount(String year, String month);
+
+
+    /**
+     * 获取机构罚没金额排行
+     */
+    List<OrganDetailVO> getOrganListOrderByFine(String year, String month);
 
     /**
      * 获取罚单地域分布

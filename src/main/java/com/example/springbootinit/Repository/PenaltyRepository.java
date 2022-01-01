@@ -1,6 +1,7 @@
 package com.example.springbootinit.Repository;
 
 import com.example.springbootinit.Entity.Penalty;
+import com.example.springbootinit.VO.OrganDetailVO;
 import com.example.springbootinit.VO.PunishmentDecisionVO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -53,4 +54,30 @@ public interface PenaltyRepository extends JpaRepository<Penalty, Integer> ,JpaS
             , nativeQuery = true)
     List<Penalty> findAllOrderByFine(@Param("year") String year,
                                      @Param("month") String month);
+
+    @Query(value =
+            "SELECT name, count(*) as count, sum(fine) as amount " +
+                    "From Penalty " +
+                    "Where year(date) = :year and month(date) = :month " +
+                    "group by name " +
+                    "Order by count Desc " +
+                    "Limit 10 "
+            , nativeQuery = true)
+    List findAllByCountAndDate(@Param("year") String year,
+                                              @Param("month") String month);
+
+    @Query(value =
+            "SELECT name, count(*) as count, sum(fine) as amount " +
+                    "From Penalty " +
+                    "Where year(date) = :year and month(date) = :month " +
+                    "group by name " +
+                    "Order by amount Desc " +
+                    "Limit 10 "
+            , nativeQuery = true)
+    List findAllByFineAndDate(@Param("year") String year,
+                               @Param("month") String month);
+//    from penalty
+//    where year(date)='2016' and month(date)='07'
+//    group by name
+//    order by count desc
 }

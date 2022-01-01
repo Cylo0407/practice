@@ -4,13 +4,9 @@ import com.example.springbootinit.Entity.Penalty;
 import com.example.springbootinit.Exception.BussinessException;
 import com.example.springbootinit.Repository.PenaltyRepository;
 import com.example.springbootinit.Service.PenaltyService;
-import com.example.springbootinit.Utils.DataHandle;
-import com.example.springbootinit.Utils.MyResponse;
 import com.example.springbootinit.Utils.VPMapper.PenaltyMapper;
 import com.example.springbootinit.VO.*;
-import liquibase.pro.packaged.D;
-import liquibase.pro.packaged.S;
-import org.apache.tomcat.jni.Local;
+import com.example.springbootinit.VO.PunishmentDecisionVO;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -77,7 +73,7 @@ public class PenaltyServiceImpl implements PenaltyService {
     }
 
     @Override
-    public DataListVO changePenaltyStatus(String status, List<String> ids) {
+    public DataListVO<PenaltyVO> changePenaltyStatus(String status, List<String> ids) {
         List<PenaltyVO> penaltyList = new ArrayList<>();
         ids.forEach(id -> {
             Penalty penalty = penaltyRepository.findById(Integer.parseInt(id))
@@ -91,7 +87,7 @@ public class PenaltyServiceImpl implements PenaltyService {
     }
 
     @Override
-    public DataListVO findAllPenalty(PenaltyVO penaltyVO, int pageNumber, int pageSize, boolean isVague) {
+    public DataListVO<PenaltyVO> findAllPenalty(PenaltyVO penaltyVO, int pageNumber, int pageSize, boolean isVague) {
         try {
             Sort.Direction sort = Sort.Direction.ASC;
             Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, sort, "id");
@@ -128,7 +124,7 @@ public class PenaltyServiceImpl implements PenaltyService {
     }
 
     @Override
-    public DataListVO getAnalysis(String type, String year, String month) {
+    public DataListVO<PunishmentDecisionVO> getAnalysis(String type, String year, String month) {
         try {
             List<Penalty> penaltyMatch = penaltyRepository.findAllByTypeAndDate(Integer.valueOf(type), year, month);
             int countAll = penaltyMatch.size();
@@ -285,5 +281,25 @@ public class PenaltyServiceImpl implements PenaltyService {
 
         if (flag == 0) return branchList;
         else return centerBranchList;
+    }
+
+    @Override
+    public List<OrganDetailVO> getOrganListOrderByCount(String year, String month){
+        try {
+            List<OrganDetailVO> organDetailVOList = penaltyRepository.findAllByCountAndDate(year, month);
+            return organDetailVOList;
+        }catch (DataAccessException e) {
+            throw new BussinessException("查询出错");
+        }
+    }
+
+    @Override
+    public List<OrganDetailVO> getOrganListOrderByFine(String year, String month){
+        try {
+            List<OrganDetailVO> organDetailVOList = penaltyRepository.findAllByFineAndDate(year, month);
+            return organDetailVOList;
+        }catch (DataAccessException e) {
+            throw new BussinessException("查询出错");
+        }
     }
 }
