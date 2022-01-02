@@ -24,7 +24,7 @@
                 <constraints nullable="false" />
             </column>
 
-            <column name="number" type="varchar(64)" remarks="行政处罚决定文号"  >
+            <column name="number" type="varchar(128)" remarks="行政处罚决定文号"  >
                 <constraints nullable="false" unique="true"/>
             </column>
 
@@ -38,11 +38,11 @@
 
             <column name="responsiblePersonName" type="varchar(64)" remarks="主要负责人姓名" />
 
-            <column name="facts" type="varchar(255)" remarks="主要违法违规事实" />
+            <column name="facts" type="varchar(256)" remarks="主要违法违规事实" />
 
-            <column name="basis" type="varchar(255)" remarks="行政处罚依据"/>
+            <column name="basis" type="varchar(256)" remarks="行政处罚依据"/>
 
-            <column name="decision" type="varchar(255)" remarks="行政处罚决定"/>
+            <column name="decision" type="varchar(512)" remarks="行政处罚决定"/>
 
             <column name="organName" type="varchar(64)" remarks="行政处罚机关名称"/>
 

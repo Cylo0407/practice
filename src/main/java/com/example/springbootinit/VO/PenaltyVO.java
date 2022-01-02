@@ -20,7 +20,7 @@ public class PenaltyVO {
     @Excel(name = "行政处罚名称", isImportField = "true")
     private String name; //行政处罚名称
 
-    @Size(max = 64, message = "文号长度不能超过64")
+    @Size(max = 128, message = "文号长度不能超过128")
     @Excel(name = "行政处罚决定文号", isImportField = "true")
     private String number; //行政处罚决定文号
 
@@ -41,11 +41,11 @@ public class PenaltyVO {
     private String facts; //主要违法违规事实
 
     @Excel(name = "行政处罚依据")
-    @Size(max = 255, message = "处罚依据长度不能超过255")
+    @Size(max = 256, message = "处罚依据长度不能超过256")
     private String basis; //行政处罚依据
 
     @Excel(name = "行政处罚决定")
-    @Size(max = 255, message = "处罚决定长度不能超过255")
+    @Size(max = 512, message = "处罚决定长度不能超过512")
     private String decision; //行政处罚决定
 
     @Excel(name = "行政处罚类型")

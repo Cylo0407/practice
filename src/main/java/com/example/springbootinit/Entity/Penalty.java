@@ -23,7 +23,7 @@ public class Penalty {
     @Column(name = "name", length = 64, nullable = false)
     private String name; //行政处罚名称
 
-    @Column(name = "number", length = 64, unique = true, nullable = false)
+    @Column(name = "number", length = 128, unique = true, nullable = false)
     private String number; //行政处罚决定文号
 
     @Column(name = "type", nullable = false)
@@ -35,13 +35,13 @@ public class Penalty {
     @Column(name = "responsiblePersonName", length = 64)
     private String responsiblePersonName; //主要负责人姓名
 
-    @Column(name = "facts")
+    @Column(name = "facts", length = 256)
     private String facts; //主要违法违规事实
 
-    @Column(name = "basis")
+    @Column(name = "basis", length = 256)
     private String basis; //行政处罚依据
 
-    @Column(name = "decision")
+    @Column(name = "decision", length = 512)
     private String decision; //行政处罚决定
 
     @Column(name = "punishmentType")
