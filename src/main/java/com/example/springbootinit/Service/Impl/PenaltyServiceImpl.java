@@ -131,16 +131,16 @@ public class PenaltyServiceImpl implements PenaltyService {
 
             List<FrequencyStatisticsVO> result = new ArrayList<>();
             penaltyGroupByPunishmentType.forEach((key, value) -> {
-                FrequencyStatisticsVO p = new FrequencyStatisticsVO();
-                p.setType(key);
-                p.setFrequency(String.valueOf(value.size()));
-                p.setRatio(String.format("%.2f", value.size() / (double) countAll));
-                p.setAmount(String.format("%.2f", getAmount(value)));
-                result.add(p);
+                FrequencyStatisticsVO f = new FrequencyStatisticsVO();
+                f.setType(key);
+                f.setFrequency(String.valueOf(value.size()));
+                f.setRatio(String.format("%.2f", value.size() / (double) countAll * 100));
+                f.setAmount(String.format("%.2f", getAmount(value)));
+                result.add(f);
             });
 
             //按频次降序排序
-            result.sort(Comparator.comparingInt((FrequencyStatisticsVO p) -> Integer.parseInt(p.getFrequency())).reversed());
+            result.sort(Comparator.comparingInt((FrequencyStatisticsVO f) -> Integer.parseInt(f.getFrequency())).reversed());
 
             DataListVO<FrequencyStatisticsVO> dataListVO = new DataListVO<>();
             dataListVO.setDataList(result);
@@ -160,19 +160,34 @@ public class PenaltyServiceImpl implements PenaltyService {
 
             List<FrequencyStatisticsVO> result = new ArrayList<>();
             penaltyGroupByBasis.forEach((key, value) -> {
-                FrequencyStatisticsVO p = new FrequencyStatisticsVO();
-                p.setType(key);
-                p.setFrequency(String.valueOf(value.size()));
-                p.setRatio(String.format("%.2f", value.size() / (double) countAll));
-                p.setAmount(String.format("%.2f", getAmount(value)));
-                result.add(p);
+                FrequencyStatisticsVO f = new FrequencyStatisticsVO();
+                f.setType(key);
+                f.setFrequency(String.valueOf(value.size()));
+                f.setRatio(String.format("%.2f", value.size() / (double) countAll  * 100));
+                f.setAmount(String.format("%.2f", getAmount(value)));
+                result.add(f);
             });
 
             //按频次降序排序
-            result.sort(Comparator.comparingInt((FrequencyStatisticsVO p) -> Integer.parseInt(p.getFrequency())).reversed());
+            result.sort(Comparator.comparingInt((FrequencyStatisticsVO f) -> Integer.parseInt(f.getFrequency())).reversed());
+
+            //频次10名后归为其他
+            List<FrequencyStatisticsVO> finalResult = result;
+            if (result.size() > 10) {
+               List<FrequencyStatisticsVO> subList = result.subList(11, result.size());
+               finalResult = result.subList(0, 10);
+               FrequencyStatisticsVO fs = new FrequencyStatisticsVO();
+               int frequency = subList.stream().mapToInt(f -> Integer.parseInt(f.getFrequency())).sum();
+               double amount = subList.stream().mapToDouble(f -> Double.parseDouble(f.getAmount())).sum();
+               fs.setType("其他");
+               fs.setFrequency(String.valueOf(frequency));
+               fs.setRatio(String.format("%.2f", frequency / (double) countAll * 100) );
+               fs.setAmount(String.format("%.2f", amount));
+               finalResult.add(fs);
+            }
 
             DataListVO<FrequencyStatisticsVO> dataListVO = new DataListVO<>();
-            dataListVO.setDataList(result);
+            dataListVO.setDataList(finalResult);
             return dataListVO;
         } catch (DataAccessException e) {
             throw new BussinessException("查询出错");
@@ -215,9 +230,9 @@ public class PenaltyServiceImpl implements PenaltyService {
                 ProvinceDetailVO p = new ProvinceDetailVO();
                 p.setProvince(key);
                 p.setCount(String.valueOf(value.size()));
-                p.setCountRatio(String.format("%.2f", value.size() / (double) countAll));
+                p.setCountRatio(String.format("%.2f", value.size() / (double) countAll * 100));
                 p.setAmount(String.format("%.2f", amount));
-                p.setAmountRatio(String.format("%.2f", amount / amountAll));
+                p.setAmountRatio(String.format("%.2f", amount / amountAll * 100));
                 p.setAmountOrganization(String.format("%.2f", organAmount));
                 p.setAmountPersonal(String.format("%.2f", personalAmount));
                 p.setCountOrganization(String.valueOf(organPenaltyList.size()));
@@ -272,16 +287,16 @@ public class PenaltyServiceImpl implements PenaltyService {
         //分行相关
         List<Penalty> branchList = getBranchToalOfSummary(presentList, 0);
         summaryVO.setBranchTotal("" + branchList.size()); //分行罚单合计
-        summaryVO.setBranchTotalRatio(String.format("%.2f", (double) branchList.size() / presentList.size())); //分行罚单百分比
+        summaryVO.setBranchTotalRatio(String.format("%.2f", (double) branchList.size() / presentList.size() * 100)); //分行罚单百分比
         summaryVO.setBranchAmount("" + getAmount(branchList)); //分行累计罚没金额
-        summaryVO.setBranchAmountRatio(String.format("%.2f", getAmount(branchList) / amountOfSummary)); //分行罚没金额百分比
+        summaryVO.setBranchAmountRatio(String.format("%.2f", getAmount(branchList) / amountOfSummary * 100)); //分行罚没金额百分比
 
         //中心支行相关
         List<Penalty> centerBranchList = getBranchToalOfSummary(presentList, 1);
         summaryVO.setCenterBranchTotal("" + centerBranchList.size()); //中心支行罚单合计
-        summaryVO.setCenterBranchTotalRatio(String.format("%.2f", (double) centerBranchList.size() / presentList.size())); //中心支行罚单百分比
+        summaryVO.setCenterBranchTotalRatio(String.format("%.2f", (double) centerBranchList.size() / presentList.size() * 100)); //中心支行罚单百分比
         summaryVO.setCenterBranchAmount("" + getAmount(centerBranchList)); //中心支行累计罚没金额
-        summaryVO.setCenterBranchAmountRatio(String.format("%.2f", getAmount(centerBranchList) / amountOfSummary)); //中心支行罚没金额百分比
+        summaryVO.setCenterBranchAmountRatio(String.format("%.2f", getAmount(centerBranchList) / amountOfSummary * 100)); //中心支行罚没金额百分比
 
         return summaryVO;
     }
